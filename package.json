@@ -1,0 +1,27 @@
+{
+  "name": "frontbet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dioneyfroes-coder/frontBet.git"
+  },
+  "author": "dioneyfroes-coder",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dioneyfroes-coder/frontBet/issues"
+  },
+  "homepage": "https://github.com/dioneyfroes-coder/frontBet#readme",
+  "dependencies": {
+    "next": "^16.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}
