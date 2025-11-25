@@ -1,54 +1,67 @@
-import type { Route } from "./+types/login";
-import { PageShell } from "../components/page-shell";
+import type { Route } from './+types/login';
+import { SignIn, SignedIn, SignedOut } from '@clerk/react-router';
+import { useLoaderData, useNavigate } from 'react-router';
+import { PageShell } from '../components/page-shell';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Login - FrontBet" },
+    { title: 'Login - FrontBet' },
     {
-      name: "description",
-      content: "Entre na sua conta FrontBet e acompanhe palpites, limites e histórico em tempo real.",
+      name: 'description',
+      content:
+        'Entre na sua conta FrontBet e acompanhe palpites, limites e histórico em tempo real.',
     },
   ];
 }
 
 export default function Login() {
+  const { redirectTo } = useLoaderData<{ redirectTo: string }>();
+  const navigate = useNavigate();
+
   return (
-    <PageShell title="Entrar na FrontBet" description="Use suas credenciais para continuar apostando com segurança.">
-      <div className="mx-auto w-full max-w-md rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm">
-        <form className="space-y-4">
-          <div className="space-y-1">
-            <label htmlFor="email" className="text-sm text-[var(--color-muted)]">
-              E-mail
-            </label>
-            <input
-              id="email"
-              type="email"
-              className="w-full rounded-xl border border-[color:var(--color-border)] bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]"
-              placeholder="voce@email.com"
-            />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="password" className="text-sm text-[var(--color-muted)]">
-              Senha
-            </label>
-            <input
-              id="password"
-              type="password"
-              className="w-full rounded-xl border border-[color:var(--color-border)] bg-transparent px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]"
-              placeholder="••••••••"
-            />
-          </div>
-          <button
-            type="button"
-            className="w-full rounded-xl bg-[var(--color-primary)] px-4 py-2 font-semibold text-[var(--color-bg)]"
-          >
-            Continuar
-          </button>
-          <p className="text-center text-sm text-[var(--color-muted)]">
-            Esqueceu a senha? <span className="text-[var(--color-primary)]">Recuperar acesso</span>
-          </p>
-        </form>
+    <PageShell
+      title="Entrar na FrontBet"
+      description="Use suas credenciais para continuar apostando com segurança."
+    >
+      <div className="mx-auto w-full max-w-lg space-y-6">
+        <SignedOut>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Acesse sua conta</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SignIn
+                routing="path"
+                path="/login"
+                redirectUrl={redirectTo ?? '/perfil'}
+                appearance={{ variables: { colorPrimary: '#0ea5e9' } }}
+              />
+            </CardContent>
+          </Card>
+        </SignedOut>
+
+        <SignedIn>
+          <Card>
+            <CardHeader>
+              <CardTitle>Você já está autenticado</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-[var(--color-muted)]">
+                Continue para o seu painel ou escolha outro destino usando o menu lateral.
+              </p>
+              <Button onClick={() => navigate(redirectTo ?? '/perfil')}>Ir para o painel</Button>
+            </CardContent>
+          </Card>
+        </SignedIn>
       </div>
     </PageShell>
   );
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const redirectTo = url.searchParams.get('redirectTo') || '/perfil';
+  return { redirectTo };
 }

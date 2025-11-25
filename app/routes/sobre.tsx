@@ -1,27 +1,31 @@
-import type { Route } from "./+types/sobre";
-import { PageShell } from "../components/page-shell";
+import type { Route } from './+types/sobre';
+import { PageShell } from '../components/page-shell';
 
 const pilares = [
   {
-    title: "Tecnologia em tempo real",
-    description: "Infraestrutura otimizada para atualizar probabilidades em milissegundos, garantindo decisões ágeis.",
+    title: 'Tecnologia em tempo real',
+    description:
+      'Infraestrutura otimizada para atualizar probabilidades em milissegundos, garantindo decisões ágeis.',
   },
   {
-    title: "Responsabilidade",
-    description: "Ferramentas de limites, alertas e educação financeira para promover apostas conscientes.",
+    title: 'Responsabilidade',
+    description:
+      'Ferramentas de limites, alertas e educação financeira para promover apostas conscientes.',
   },
   {
-    title: "Experiência local",
-    description: "Conteúdo e suporte em português, com foco no calendário esportivo brasileiro e sul-americano.",
+    title: 'Experiência local',
+    description:
+      'Conteúdo e suporte em português, com foco no calendário esportivo brasileiro e sul-americano.',
   },
 ];
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Sobre - FrontBet" },
+    { title: 'Sobre - FrontBet' },
     {
-      name: "description",
-      content: "Conheça a missão da FrontBet e como ajudamos apostadores a jogarem com inteligência.",
+      name: 'description',
+      content:
+        'Conheça a missão da FrontBet e como ajudamos apostadores a jogarem com inteligência.',
     },
   ];
 }

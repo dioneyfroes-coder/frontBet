@@ -1,27 +1,27 @@
-import type { Route } from "./+types/contato";
-import { PageShell } from "../components/page-shell";
+import type { Route } from './+types/contato';
+import { PageShell } from '../components/page-shell';
 
 const contatos = [
   {
-    label: "Suporte 24/7",
-    value: "suporte@frontbet.com",
+    label: 'Suporte 24/7',
+    value: 'suporte@frontbet.com',
   },
   {
-    label: "Parcerias",
-    value: "parcerias@frontbet.com",
+    label: 'Parcerias',
+    value: 'parcerias@frontbet.com',
   },
   {
-    label: "Comercial",
-    value: "+55 11 4002-8922",
+    label: 'Comercial',
+    value: '+55 11 4002-8922',
   },
 ];
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Contato - FrontBet" },
+    { title: 'Contato - FrontBet' },
     {
-      name: "description",
-      content: "Fale com o time FrontBet para suporte, parcerias e oportunidades comerciais.",
+      name: 'description',
+      content: 'Fale com o time FrontBet para suporte, parcerias e oportunidades comerciais.',
     },
   ];
 }

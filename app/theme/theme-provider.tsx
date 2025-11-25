@@ -1,14 +1,7 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-const THEME_STORAGE_KEY = "frontbet:theme";
-const SUPPORTED_THEMES = ["light", "dark", "high-contrast"] as const;
+const THEME_STORAGE_KEY = 'frontbet:theme';
+const SUPPORTED_THEMES = ['light', 'dark', 'high-contrast'] as const;
 
 export type Theme = (typeof SUPPORTED_THEMES)[number];
 
@@ -20,15 +13,12 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function isTheme(value: unknown): value is Theme {
-  return (
-    typeof value === "string" &&
-    SUPPORTED_THEMES.includes(value as Theme)
-  );
+  return typeof value === 'string' && SUPPORTED_THEMES.includes(value as Theme);
 }
 
 function getPreferredTheme(): Theme {
-  if (typeof window === "undefined") {
-    return "light";
+  if (typeof window === 'undefined') {
+    return 'light';
   }
 
   const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -36,26 +26,26 @@ function getPreferredTheme(): Theme {
     return storedTheme;
   }
 
-  const mediaQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
+  const mediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
   const prefersDark = mediaQuery?.matches ?? false;
-  return prefersDark ? "dark" : "light";
+  return prefersDark ? 'dark' : 'light';
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
+  const [theme, setThemeState] = useState<Theme>('light');
 
   useEffect(() => {
     setThemeState(getPreferredTheme());
   }, []);
 
   useEffect(() => {
-    if (typeof document === "undefined") {
+    if (typeof document === 'undefined') {
       return;
     }
 
     document.documentElement.dataset.theme = theme;
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       window.localStorage.setItem(THEME_STORAGE_KEY, theme);
     }
   }, [theme]);
@@ -73,7 +63,7 @@ export function useTheme() {
   const context = useContext(ThemeContext);
 
   if (!context) {
-    throw new Error("useTheme must be used within ThemeProvider");
+    throw new Error('useTheme must be used within ThemeProvider');
   }
 
   return context;

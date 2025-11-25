@@ -1,37 +1,41 @@
-import type { Route } from "./+types/loja";
-import { PageShell } from "../components/page-shell";
+import type { Route } from './+types/loja';
+import { PageShell } from '../components/page-shell';
+import { requireAuth } from '../utils/auth.server';
 
 const produtos = [
   {
-    nome: "Boost de odds",
-    descricao: "Aumente em até 15% o retorno de apostas múltiplas selecionadas.",
-    preco: "R$ 29,90",
+    nome: 'Boost de odds',
+    descricao: 'Aumente em até 15% o retorno de apostas múltiplas selecionadas.',
+    preco: 'R$ 29,90',
   },
   {
-    nome: "Relatórios avançados",
-    descricao: "Insights personalizados com base no seu histórico para encontrar valor escondido.",
-    preco: "R$ 19,90/mês",
+    nome: 'Relatórios avançados',
+    descricao: 'Insights personalizados com base no seu histórico para encontrar valor escondido.',
+    preco: 'R$ 19,90/mês',
   },
   {
-    nome: "Alertas premium",
-    descricao: "Receba notificações push quando odds atingirem o preço-alvo definido por você.",
-    preco: "R$ 14,90/mês",
+    nome: 'Alertas premium',
+    descricao: 'Receba notificações push quando odds atingirem o preço-alvo definido por você.',
+    preco: 'R$ 14,90/mês',
   },
 ];
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Loja - FrontBet" },
+    { title: 'Loja - FrontBet' },
     {
-      name: "description",
-      content: "Adicione boosts e ferramentas premium para elevar sua estratégia de apostas.",
+      name: 'description',
+      content: 'Adicione boosts e ferramentas premium para elevar sua estratégia de apostas.',
     },
   ];
 }
 
 export default function Loja() {
   return (
-    <PageShell title="Loja FrontBet" description="Ferramentas opcionais para turbinar seus palpites e automatizar decisões.">
+    <PageShell
+      title="Loja FrontBet"
+      description="Ferramentas opcionais para turbinar seus palpites e automatizar decisões."
+    >
       <section className="grid gap-6 md:grid-cols-3">
         {produtos.map((produto) => (
           <article
@@ -51,4 +55,9 @@ export default function Loja() {
       </section>
     </PageShell>
   );
+}
+
+export async function loader(args: Route.LoaderArgs) {
+  await requireAuth(args);
+  return {};
 }

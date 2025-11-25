@@ -1,36 +1,39 @@
-import type { Route } from "./+types/jogos";
-import { PageShell } from "../components/page-shell";
+import type { Route } from './+types/jogos';
+import { PageShell } from '../components/page-shell';
 
 const jogos = [
   {
-    liga: "Brasileirão",
+    liga: 'Brasileirão',
     partidas: [
-      { confronto: "Flamengo x Palmeiras", oddCasa: "1.95", oddEmpate: "3.20", oddFora: "3.60" },
-      { confronto: "Bahia x Fortaleza", oddCasa: "2.35", oddEmpate: "3.10", oddFora: "3.00" },
+      { confronto: 'Flamengo x Palmeiras', oddCasa: '1.95', oddEmpate: '3.20', oddFora: '3.60' },
+      { confronto: 'Bahia x Fortaleza', oddCasa: '2.35', oddEmpate: '3.10', oddFora: '3.00' },
     ],
   },
   {
-    liga: "Champions League",
+    liga: 'Champions League',
     partidas: [
-      { confronto: "Real Madrid x City", oddCasa: "2.50", oddEmpate: "3.40", oddFora: "2.60" },
-      { confronto: "PSG x Bayern", oddCasa: "2.90", oddEmpate: "3.60", oddFora: "2.30" },
+      { confronto: 'Real Madrid x City', oddCasa: '2.50', oddEmpate: '3.40', oddFora: '2.60' },
+      { confronto: 'PSG x Bayern', oddCasa: '2.90', oddEmpate: '3.60', oddFora: '2.30' },
     ],
   },
 ];
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Jogos - FrontBet" },
+    { title: 'Jogos - FrontBet' },
     {
-      name: "description",
-      content: "Calendário de partidas com odds ilustrativas para criar seus palpites na FrontBet.",
+      name: 'description',
+      content: 'Calendário de partidas com odds ilustrativas para criar seus palpites na FrontBet.',
     },
   ];
 }
 
 export default function Jogos() {
   return (
-    <PageShell title="Próximos jogos" description="Acompanhe as odds principais e clique para montar seu bilhete.">
+    <PageShell
+      title="Próximos jogos"
+      description="Acompanhe as odds principais e clique para montar seu bilhete."
+    >
       <div className="space-y-6">
         {jogos.map((grupo) => (
           <section
