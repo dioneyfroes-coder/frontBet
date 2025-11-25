@@ -1,87 +1,59 @@
-# Welcome to React Router!
+Projeto Frontend (Nome Temporário)
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Este repositório contém a base frontend de uma plataforma modular voltada para experiências interativas em tempo real. A arquitetura foi desenhada para ser rápida, expansível e fácil de adaptar a diferentes produtos — inclusive comerciais.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+Objetivos do Projeto
 
-## Features
+Fornecer uma fundação moderna usando React + Remix.
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+Oferecer um sistema de temas (light, dark, high-contrast) totalmente tokenizado.
 
-## Getting Started
+Permitir adição de novos módulos/jogos sem retrabalho estrutural.
 
-### Installation
+Integrar com provedores de autenticação como Clerk (substituível no futuro).
 
-Install the dependencies:
+Garantir desempenho fluido, UI responsiva e máxima segurança.
 
-```bash
+Facilitar evolução para produtos customizados, whitelabel ou versões comerciais.
+
+Funcionalidades Atuais
+
+Autenticação simples via Clerk.
+
+Layout responsivo com identidade visual modular.
+
+Suporte a múltiplos temas.
+
+Estrutura para jogos plug-and-play.
+
+Suporte inicial para carteira (saldo, depósitos, saques).
+
+Sistema de componentes base padronizados.
+
+Tecnologias
+
+React + Remix
+
+TypeScript
+
+Vite
+
+Framer Motion
+
+ESLint (flat config)
+
+React Router Typegen
+
+Web Workers / otimizações multicore (quando aplicável)
+
+Status
+
+O projeto está em desenvolvimento ativo. O nome atual é apenas interno — a identidade final pode ser definida conforme o produto evoluir ou for comercializado. A estrutura foi planejada para facilitar rebranding completo.
+
+Como Rodar
 npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
 npm run dev
-```
 
-Your application will be available at `http://localhost:5173`.
+Contribuição
 
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+Pull requests são bem-vindos. O foco atual é estabilidade, acessibilidade, consistência visual e modularidade dos componentes.
