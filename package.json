@@ -7,13 +7,14 @@
     "dev": "react-router dev",
     "lint": "eslint . --ext ts,tsx --max-warnings=0",
     "format": "prettier --write .",
-    "start": "dotenv -e .env -- react-router-serve ./build/server/index.js",
+    "start": "dotenv -e .env -- react-router-serve ./build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@clerk/react-router": "^2.3.0",
+    "@emotion/is-prop-valid": "^1.4.0",
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
     "framer-motion": "^12.23.24",
@@ -36,6 +37,7 @@
     "@types/react-dom": "^19.1.9",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
+    "@vercel/react-router": "^1.2.3",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9.39.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
