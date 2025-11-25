@@ -1,7 +1,7 @@
 import { getAuth } from '@clerk/react-router/server';
-import { redirect, type DataFunctionArgs } from 'react-router';
+import { redirect, type ActionFunctionArgs } from 'react-router';
 
-export async function requireAuth(args: DataFunctionArgs, redirectTo?: string) {
+export async function requireAuth(args: ActionFunctionArgs, redirectTo?: string) {
   const auth = await getAuth(args);
   const { request } = args;
 

@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
-import { availableThemes, type Theme, useTheme } from './theme-provider';
+import { availableThemes, useTheme } from './theme-provider';
+type Theme = (typeof availableThemes)[number];
 
 const themeLabels: Record<Theme, string> = {
   light: '',

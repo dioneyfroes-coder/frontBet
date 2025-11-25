@@ -1,14 +1,6 @@
-import type { InputHTMLAttributes, ReactNode } from 'react';
 import { useId } from 'react';
 import { cn } from '../../lib/cn';
-
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  description?: string;
-  error?: string;
-  startIcon?: ReactNode;
-  endIcon?: ReactNode;
-}
+import type { InputProps } from '../../types/ui';
 
 export function Input({
   label,

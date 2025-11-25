@@ -1,14 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import type { Theme, ThemeContextValue } from '../types/theme';
+import { SUPPORTED_THEMES } from '../types/theme';
 
 const THEME_STORAGE_KEY = 'frontbet:theme';
-const SUPPORTED_THEMES = ['light', 'dark', 'high-contrast'] as const;
-
-export type Theme = (typeof SUPPORTED_THEMES)[number];
-
-interface ThemeContextValue {
-  theme: Theme;
-  setTheme: (next: Theme) => void;
-}
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 

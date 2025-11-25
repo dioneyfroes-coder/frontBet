@@ -1,17 +1,7 @@
-import type { ReactNode } from 'react';
 import { useEffect, useId, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../../lib/cn';
-
-interface ModalProps {
-  open: boolean;
-  onClose: () => void;
-  title?: ReactNode;
-  description?: ReactNode;
-  children?: ReactNode;
-  footer?: ReactNode;
-  className?: string;
-}
+import type { ModalProps } from '../../types/ui';
 
 export function Modal({
   open,

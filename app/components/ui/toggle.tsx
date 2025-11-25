@@ -1,12 +1,5 @@
-import type { HTMLAttributes } from 'react';
 import { cn } from '../../lib/cn';
-
-interface ToggleProps extends Omit<HTMLAttributes<HTMLButtonElement>, 'onChange'> {
-  checked: boolean;
-  onChange: (next: boolean) => void;
-  label?: string;
-  description?: string;
-}
+import type { ToggleProps } from '../../types/ui';
 
 export function Toggle({
   checked,

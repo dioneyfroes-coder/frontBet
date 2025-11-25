@@ -24,13 +24,13 @@ Auditoria de ações sensíveis (saques, depósitos).
 
 Carteira (PIX)
 
-Página de saldo + transações com WebSocket/stream.
+- [x] Página de saldo + transações com WebSocket/stream.
 
-Fluxo de depósito via PIX (geração, espera, confirmação).
+- [x] Fluxo de depósito via PIX (geração, espera, confirmação).
 
-Fluxo de saque via PIX (validação de dados).
+- [x] Fluxo de saque via PIX (validação de dados).
 
-Validações fortes no backend + feedback visual no front.
+- [x] Validações fortes no backend + feedback visual no front.
 
 Jogos e Arquitetura Modular
 

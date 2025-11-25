@@ -1,7 +1,7 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../../lib/cn';
+import type { ButtonProps, ButtonSize, ButtonVariant } from '../../types/ui';
 
-const buttonVariants = {
+const buttonVariants: Record<ButtonVariant, string> = {
   primary: 'bg-[var(--color-primary)] text-[var(--color-bg)] hover:brightness-110',
   secondary:
     'bg-[var(--color-surface)] text-[var(--color-text)] border border-[color:var(--color-border)] hover:border-[color:var(--color-primary)]',
@@ -9,21 +9,13 @@ const buttonVariants = {
     'bg-transparent text-[var(--color-text)] border border-[color:var(--color-border)] hover:border-[color:var(--color-primary)]',
   ghost: 'bg-transparent text-[var(--color-muted)] hover:text-[var(--color-text)]',
   destructive: 'bg-[var(--color-danger)] text-[var(--color-bg)] hover:brightness-110',
-} as const;
+};
 
-const buttonSizes = {
+const buttonSizes: Record<ButtonSize, string> = {
   sm: 'h-9 rounded-full px-4 text-sm',
   md: 'h-11 rounded-full px-5 text-base',
   lg: 'h-12 rounded-full px-6 text-base',
-} as const;
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: keyof typeof buttonVariants;
-  size?: keyof typeof buttonSizes;
-  isLoading?: boolean;
-  icon?: ReactNode;
-  fullWidth?: boolean;
-}
+};
 
 export function Button({
   children,

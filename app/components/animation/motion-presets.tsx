@@ -1,9 +1,6 @@
-import type { HTMLMotionProps } from 'framer-motion';
 import { motion } from 'framer-motion';
-
-interface PresetProps extends HTMLMotionProps<'div'> {
-  delay?: number;
-}
+import type { HTMLMotionProps } from 'framer-motion';
+import type { PresetProps } from '../../types/animation';
 
 const viewport = { once: true, amount: 0.35 } as const;
 

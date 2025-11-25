@@ -7,6 +7,7 @@ export default [
   route('login/*', 'routes/login.tsx'),
   route('perfil', 'routes/perfil.tsx'),
   route('perfil/atividade', 'routes/perfil.atividade.tsx'),
+  route('carteira', 'routes/carteira.tsx'),
   route('loja', 'routes/loja.tsx'),
   route('jogos', 'routes/jogos.tsx'),
   route('auditoria', 'routes/auditoria.tsx'),

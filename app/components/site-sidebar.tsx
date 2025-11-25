@@ -7,6 +7,7 @@ const sidebarNav = [
   { label: 'Visão geral', to: '/' },
   { label: 'Jogos', to: '/jogos' },
   { label: 'Loja', to: '/loja' },
+  { label: 'Carteira', to: '/carteira' },
   { label: 'Perfil', to: '/perfil' },
   { label: 'Atividade', to: '/perfil/atividade' },
   { label: 'Auditoria', to: '/auditoria' },
@@ -15,7 +16,7 @@ const sidebarNav = [
 ];
 
 const quickActions = [
-  { label: 'Depositar PIX', to: '/perfil' },
+  { label: 'Depositar PIX', to: '/carteira' },
   { label: 'Explorar promoções', to: '/loja' },
 ];
 
