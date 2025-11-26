@@ -3,9 +3,9 @@ import { availableThemes, useTheme } from './theme-provider';
 type Theme = (typeof availableThemes)[number];
 
 const themeLabels: Record<Theme, string> = {
-  light: '',
-  dark: '',
-  'high-contrast': '',
+  light: 'Claro',
+  dark: 'Escuro',
+  'high-contrast': 'Alto contraste',
 };
 
 const themeOrder: Theme[] = [...availableThemes];
@@ -51,19 +51,14 @@ export function ThemeSwitcher() {
   const nextTheme = themeOrder[(themeOrder.indexOf(theme) + 1) % themeOrder.length];
 
   return (
-    <div className="flex items-center gap-2">
-      <button
-        type="button"
-        onClick={() => setTheme(nextTheme)}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-sm transition hover:border-[color:var(--color-primary)] hover:text-[var(--color-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-primary)]"
-        title={`Mudar para ${themeLabels[nextTheme]}`}
-      >
-        <span className="sr-only">{themeLabels[theme]}</span>
-        {themeIcons[theme]}
-      </button>
-      <span className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
-        {themeLabels[theme]}
-      </span>
-    </div>
+    <button
+      type="button"
+      onClick={() => setTheme(nextTheme)}
+      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-sm transition hover:border-[color:var(--color-primary)] hover:text-[var(--color-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-primary)]"
+      title={`Mudar para ${themeLabels[nextTheme]}`}
+    >
+      <span className="sr-only">{themeLabels[theme]}</span>
+      {themeIcons[theme]}
+    </button>
   );
 }

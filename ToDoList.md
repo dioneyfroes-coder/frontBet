@@ -42,7 +42,7 @@ Menu gera itens automaticamente a partir do registro.
 
 Página “/games/:slug” que carrega o componente dinâmico.
 
-Criar placeholder de jogos e teste com backend real.
+Criar hooks para lógica comum (useGameLoader, useGameStats).
 
 Perfil do Usuário
 
@@ -68,16 +68,6 @@ Lazy load dos jogos.
 
 Prefetch inteligente de rotas com Remix.
 
-Futuro / Escalabilidade
-
-Implementar feature flags.
-
-Adicionar testes de UI com Playwright.
-
-Monitorar erros com Sentry.
-
-Telemetria de uso para descobrir onde o usuário trava.
-
 extra:
 
 multithreading / web workers para tarefas pesadas
@@ -96,7 +86,7 @@ portugues moçambique
 ingles
 espanhol
 
-documentação clara do código e componentes
+documentação clara do projeto inteiro, documentos separados numa pasta /docs em formato .mdx
 
 testes unitários e de integração
 

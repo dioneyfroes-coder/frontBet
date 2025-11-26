@@ -1,0 +1,629 @@
+{
+  "common": {
+    "skipToContent": "Skip to content",
+    "language": "Language",
+    "desktopNavAria": "Primary navigation",
+    "mobileNavAria": "Mobile menu"
+  },
+  "header": {
+    "betaTag": "Beta",
+    "searchPlaceholder": "Search games, leagues or promos",
+    "login": "Sign in",
+    "dashboard": "Dashboard"
+  },
+  "navigation": {
+    "overview": "Overview",
+    "gamesHub": "Games hub",
+    "store": "Store",
+    "wallet": "Wallet",
+    "profile": "Profile",
+    "activity": "Activity",
+    "audit": "Audit",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "quickActions": {
+    "depositPix": "Deposit PIX",
+    "explorePromos": "Explore promos"
+  },
+  "sidebar": {
+    "navigationTitle": "Navigation",
+    "shortcutsTitle": "Shortcuts"
+  },
+  "footer": {
+    "disclaimer": "© {year} FrontBet. Odds displayed are illustrative only.",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "meta": {
+      "title": "FrontBet - Smart bets",
+      "description": "Mobile-first betting experience with instant insights and responsible bankroll controls."
+    },
+    "seasonTag": "2025 season",
+    "heroTitle": "FrontBet, the front-end for your bets",
+    "heroDescription": "Automate slips, stream live metrics and keep bankroll rules visible.",
+    "primaryCta": "View games",
+    "secondaryCta": "Sign in",
+    "highlightsTitle": "Live highlights",
+    "highlightsSubtitle": "Combined odd",
+    "highlightsMatches": [
+      {
+        "confrontation": "Inter Miami vs LAFC",
+        "odd": "1.92"
+      },
+      {
+        "confrontation": "Arsenal vs Newcastle",
+        "odd": "2.60"
+      },
+      {
+        "confrontation": "River Plate vs Boca",
+        "odd": "2.30"
+      }
+    ],
+    "statsCards": [
+      {
+        "label": "Available balance",
+        "value": "R$ 2,450.15",
+        "trend": "+12% vs last week"
+      },
+      {
+        "label": "Top module",
+        "value": "Live Match Monitor",
+        "trend": "66 sessions / 24h"
+      },
+      {
+        "label": "Active promos",
+        "value": "Double boost BR",
+        "trend": "Expires in 6h"
+      }
+    ],
+    "activity": {
+      "title": "Recent activity",
+      "subtitle": "Synced with wallets and the games hub.",
+      "items": [
+        {
+          "id": "act-1",
+          "time": "5m ago",
+          "action": "PIX deposit confirmed",
+          "detail": "R$ 500.00"
+        },
+        {
+          "id": "act-2",
+          "time": "18m ago",
+          "action": "Signal triggered",
+          "detail": "Odds Heatmap flagged Bahia"
+        },
+        {
+          "id": "act-3",
+          "time": "45m ago",
+          "action": "Cashout ticket",
+          "detail": "Profit of R$ 120.00"
+        }
+      ]
+    },
+    "recommendations": {
+      "title": "Smart recommendations",
+      "subtitle": "Based on your latest monitored matches.",
+      "openCta": "Open"
+    }
+  },
+  "gamesHub": {
+    "meta": {
+      "title": "FrontBet - Experience catalog",
+      "description": "Browse sportsbook, casino and forex modules curated for professional trading desks."
+    },
+    "heroTag": "Smart catalog",
+    "heroTitle": "Pick how you want to play",
+    "heroDescription": "Sportsbook, live casino and forex modules curated in one cockpit.",
+    "filters": {
+      "all": "All",
+      "sports": "Sportsbook",
+      "casino": "Casino",
+      "forex": "Forex",
+      "searchPlaceholder": "Search by name, feature or sport",
+      "resultTemplate": "{count} experience(s)",
+      "emptyState": "No experience matches this filter. Try another query."
+    },
+    "comingSoon": "Coming soon",
+    "sections": [
+      {
+        "id": "sports",
+        "eyebrow": "Sports betting",
+        "title": "Tactical modules for pre-game and live",
+        "description": "Purpose-built telemetry for scouting and trading desks.",
+        "experiences": [
+          {
+            "id": "live-monitor",
+            "icon": "📡",
+            "name": "Live Match Monitor",
+            "summary": "Streams on-pitch events with sub-300ms risk alerts and staking automations.",
+            "highlights": [
+              "Desk-synced notifications",
+              "Webhook starter kit",
+              "Multi-screen layouts"
+            ],
+            "cta": "Launch module",
+            "href": "/games/live-monitor",
+            "badge": "Live"
+          },
+          {
+            "id": "odds-heatmap",
+            "icon": "🔥",
+            "name": "Odds Heatmap",
+            "summary": "Heatmap that surfaces hot clusters ahead of the market.",
+            "highlights": ["18 books & exchanges", "Explainable AI insights", "CSV/Notion export"],
+            "cta": "Launch module",
+            "href": "/games/odds-heatmap",
+            "badge": "Pro"
+          },
+          {
+            "id": "penalty-analytics",
+            "icon": "🥅",
+            "name": "Penalty Analytics",
+            "summary": "Advanced simulator for set-pieces and penalties.",
+            "highlights": ["League templates", "Coaching inputs", "Presentation ready"],
+            "cta": "Launch module",
+            "href": "/games/penalty-analytics"
+          }
+        ]
+      },
+      {
+        "id": "casino",
+        "eyebrow": "Live casino",
+        "title": "Exclusive tables with probability assistants",
+        "description": "Dealer partners plus automation-friendly data feeds.",
+        "experiences": [
+          {
+            "id": "quantum-roulette",
+            "icon": "🎡",
+            "name": "Quantum Roulette",
+            "summary": "Multipliers on top of an instrumented 500-spin history.",
+            "highlights": ["Hot & cold tracker", "Custom limit profiles", "4K streaming"],
+            "cta": "Request access",
+            "badge": "New",
+            "soon": true
+          },
+          {
+            "id": "blackjack-coach",
+            "icon": "🃏",
+            "name": "Blackjack Coach",
+            "summary": "Real-time overlay mixing card counting and volatility.",
+            "highlights": ["Optimal decision overlay", "Reshuffle alerts", "Autolog"],
+            "cta": "Request access",
+            "badge": "Beta",
+            "soon": true
+          },
+          {
+            "id": "crash-lab",
+            "icon": "🚀",
+            "name": "Crash Lab",
+            "summary": "Strategy lab for crash games with simulations and risk controls.",
+            "highlights": ["Two-year backtests", "Live cashout distribution", "Exportable sheets"],
+            "cta": "Request access",
+            "soon": true
+          }
+        ]
+      },
+      {
+        "id": "forex",
+        "eyebrow": "Forex desk",
+        "title": "Leveraged trading with responsible controls",
+        "description": "Macro dashboards, parity signals and copy trading side-by-side.",
+        "experiences": [
+          {
+            "id": "forex-pulse",
+            "icon": "📈",
+            "name": "Forex Pulse",
+            "summary": "Pair radar with sentiment, dollar index and macro diary.",
+            "highlights": ["Volatility alerts", "Metatrader bridge", "Proprietary indicators"],
+            "cta": "Request access",
+            "soon": true
+          },
+          {
+            "id": "macro-radar",
+            "icon": "🌐",
+            "name": "Macro Radar",
+            "summary": "Impact-scoring agenda with automatic briefings.",
+            "highlights": ["Multi-country calendar", "Impact scoring", "Squad briefings"],
+            "cta": "Request access",
+            "badge": "Research",
+            "soon": true
+          },
+          {
+            "id": "copy-trader",
+            "icon": "🤝",
+            "name": "Copy Trading Desk",
+            "summary": "Curated roster of audited traders with risk caps.",
+            "highlights": ["Audited history", "Custom limits", "Drawdown alerts"],
+            "cta": "Request access",
+            "soon": true
+          }
+        ]
+      }
+    ]
+  },
+  "audit": {
+    "meta": {
+      "title": "Audit - FrontBet",
+      "description": "Complete logs from every sensitive action such as withdrawals, deposits and limit changes."
+    },
+    "title": "Audit",
+    "description": "Every sensitive action is tracked with status, owner and timestamp.",
+    "cardTitle": "Monitored logs",
+    "exportCta": "Export CSV",
+    "filterCta": "Filter",
+    "columns": {
+      "id": "ID",
+      "action": "Action",
+      "amount": "Amount",
+      "status": "Status",
+      "recordedAt": "Recorded at"
+    },
+    "entries": [
+      {
+        "id": "AUD-9823",
+        "action": "PIX withdrawal",
+        "amount": "R$ 300.00",
+        "status": "Approved",
+        "timestamp": "Nov 23, 2025 18:17",
+        "agent": "System"
+      },
+      {
+        "id": "AUD-9812",
+        "action": "PIX deposit",
+        "amount": "R$ 500.00",
+        "status": "Completed",
+        "timestamp": "Nov 24, 2025 22:08",
+        "agent": "User"
+      },
+      {
+        "id": "AUD-9755",
+        "action": "Daily limit adjustment",
+        "amount": "R$ 1,500.00",
+        "status": "Review",
+        "timestamp": "Nov 21, 2025 14:53",
+        "agent": "Analyst"
+      }
+    ]
+  },
+  "wallet": {
+    "meta": {
+      "title": "Wallet - FrontBet",
+      "description": "Monitor PIX balances, flows and anti-fraud scans in real time."
+    },
+    "title": "PIX wallet",
+    "description": "Monitor balance, PIX flows and withdrawals with continuous validation.",
+    "summaryCard": {
+      "title": "Available balance",
+      "description": "Updated automatically via secure stream.",
+      "liquidLabel": "Liquid balance",
+      "lastDepositLabel": "Last deposit",
+      "realtimeLabel": "Real-time",
+      "syncingLabel": "Syncing data",
+      "noRecords": "No records",
+      "pendingTemplate": "{count} pending movement(s)",
+      "activeChannels": "Active channels:"
+    },
+    "monitoringCard": {
+      "title": "Monitoring",
+      "description": "PIX orchestrator status and recent swings.",
+      "orchestratorLabel": "Orchestrator",
+      "onlineCopy": "Stable consumption with 240ms average latency.",
+      "syncingCopy": "Re-syncing to recover optimal latency.",
+      "transactionsLabel": "Transactions / 24h",
+      "successRateLabel": "Success rate"
+    },
+    "depositCard": {
+      "title": "Deposit with PIX",
+      "description": "Generate an instant QR code with automatic expiration.",
+      "amountLabel": "Desired amount",
+      "submit": "Generate QR code",
+      "submitting": "Generating...",
+      "summaryLabel": "Amount",
+      "expiresLabel": "Expires in",
+      "pixStatus": {
+        "gerado": "Awaiting payment",
+        "confirmado": "Confirmed"
+      }
+    },
+    "withdrawCard": {
+      "title": "Request withdrawal",
+      "description": "Automatic anti-fraud validation before sending.",
+      "amountLabel": "Withdrawal amount",
+      "pixKeyLabel": "PIX key",
+      "submit": "Request withdrawal",
+      "submitting": "Processing...",
+      "successNote": "Request sent for validation.",
+      "referenceTemplate": "Withdrawal to {pixKey}"
+    },
+    "history": {
+      "title": "Recent history",
+      "description": "Deposits, withdrawals and bonuses in real time.",
+      "searchLabel": "Filter history",
+      "searchPlaceholder": "Search by reference, channel or status",
+      "filtering": "Refreshing list...",
+      "totalTemplate": "{count} record(s)",
+      "emptyState": "No movements found for this filter.",
+      "filters": {
+        "todos": "All",
+        "deposit": "Deposits",
+        "withdraw": "Withdrawals",
+        "bonus": "Bonuses"
+      },
+      "tableHeaders": {
+        "movement": "Movement",
+        "amount": "Amount",
+        "channel": "Channel",
+        "status": "Status"
+      },
+      "referenceMap": {
+        "Depósito confirmado via PIX": "PIX deposit confirmed",
+        "Saque PIX - Banco Inter": "PIX withdrawal - Banco Inter",
+        "Cashback loja de jogos": "Store cashback",
+        "Depósito programado": "Scheduled deposit",
+        "Depósito PIX confirmado automaticamente": "Auto-confirmed PIX deposit",
+        "Saque solicitado via Web": "Web PIX withdrawal request",
+        "Depósito escalonado automático": "Automated tiered deposit"
+      }
+    },
+    "connectionStates": {
+      "online": "online",
+      "sincronizando": "syncing"
+    },
+    "channels": {
+      "PIX": "PIX",
+      "Web": "Web",
+      "Automação": "Automation"
+    },
+    "statuses": {
+      "confirmado": "Confirmed",
+      "processando": "Processing",
+      "aguardando": "Pending",
+      "falhou": "Failed"
+    },
+    "errors": {
+      "depositMin": "Enter at least R$ 10.00.",
+      "depositMax": "Maximum per operation is R$ 15,000.00.",
+      "withdrawMin": "Minimum withdrawal is R$ 20.00.",
+      "withdrawBalance": "Insufficient balance.",
+      "withdrawPixKey": "Provide a valid PIX key."
+    },
+    "timeSince": {
+      "updatedNow": "Updated now",
+      "secondsAgo": "{count}s ago",
+      "minutesAgo": "{count}min ago"
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact - FrontBet",
+      "description": "Reach FrontBet for support, partnerships or integrations."
+    },
+    "title": "Contact us",
+    "description": "Reach the FrontBet team for support, partnerships or integrations.",
+    "channels": [
+      {
+        "label": "24/7 support",
+        "value": "support@frontbet.com"
+      },
+      {
+        "label": "Partnerships",
+        "value": "partners@frontbet.com"
+      },
+      {
+        "label": "Sales",
+        "value": "+1 (305) 555-0199"
+      }
+    ],
+    "form": {
+      "nameLabel": "Full name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Tell us how we can help",
+      "submit": "Send message"
+    }
+  },
+  "login": {
+    "meta": {
+      "title": "Login - FrontBet",
+      "description": "Sign in to access your FrontBet bets, limits and history."
+    },
+    "title": "Sign in to FrontBet",
+    "description": "Use your credentials to keep betting securely.",
+    "signedOutCardTitle": "Access your account",
+    "signedInCardTitle": "You are already signed in",
+    "signedInDescription": "Head to your dashboard or choose another destination.",
+    "buttonLabel": "Go to dashboard"
+  },
+  "store": {
+    "meta": {
+      "title": "Store - FrontBet",
+      "description": "Add boosts and premium tools to elevate your betting strategy."
+    },
+    "title": "FrontBet store",
+    "description": "Optional boosts to power up your strategy.",
+    "addToCart": "Add",
+    "products": [
+      {
+        "name": "Odds boost",
+        "description": "Increase returns up to 15% on select multis.",
+        "price": "US$ 5.99"
+      },
+      {
+        "name": "Advanced reports",
+        "description": "Personalized insights based on your betting history.",
+        "price": "US$ 3.90/mo"
+      },
+      {
+        "name": "Premium alerts",
+        "description": "Push notifications when odds hit your target price.",
+        "price": "US$ 2.90/mo"
+      }
+    ]
+  },
+  "profile": {
+    "meta": {
+      "title": "Profile - FrontBet",
+      "description": "Track your performance, limits and personalized history inside the dashboard."
+    },
+    "title": "Your dashboard",
+    "description": "Financial snapshot, personalized limits and a quick bet history refresh.",
+    "stats": [
+      { "label": "Current bankroll", "value": "R$ 2,450.00" },
+      { "label": "Monthly profit", "value": "+18%" },
+      { "label": "Active picks", "value": "6" }
+    ],
+    "history": {
+      "title": "Recent history",
+      "subtitle": "Latest movements this month",
+      "cta": "See all",
+      "entries": [
+        { "event": "Brasileirão - Bahia win", "odd": "2.30", "status": "won" },
+        { "event": "Libertadores - Over 2.5 goals", "odd": "1.90", "status": "open" },
+        { "event": "NBA - Celtics handicap", "odd": "1.85", "status": "lost" }
+      ],
+      "statusLabels": {
+        "won": "Won",
+        "open": "Open",
+        "lost": "Lost"
+      },
+      "oddTemplate": "Odds {odd}",
+      "footer": "Odds and statuses are illustrative and sync automatically in production."
+    },
+    "personalForm": {
+      "title": "Personal data",
+      "description": "Update documents, contact channels and core preferences with a mobile-first layout.",
+      "fields": {
+        "name": { "label": "Full name" },
+        "email": { "label": "Primary email" },
+        "phone": { "label": "Phone / WhatsApp" },
+        "document": { "label": "Document" },
+        "notes": {
+          "label": "Internal notes",
+          "placeholder": "Record any detail the team should know."
+        }
+      },
+      "saveCta": "Save changes",
+      "savingLabel": "Saving...",
+      "savedNote": "Data synced successfully."
+    },
+    "documentUpload": {
+      "title": "Document upload",
+      "description": "Send front and back of official IDs. Supports PDF and images up to 10MB.",
+      "dropzoneLabel": "Drag the file here",
+      "acceptedFormats": "Accepted formats: PDF, JPG, PNG",
+      "statusLabels": {
+        "processed": "Document validated",
+        "uploading": "Uploading...",
+        "idle": "Click to select"
+      },
+      "helper": "Automatic validation cross-checks bureaus and stores an encrypted audit trail. Real implementation uploads to secure storage."
+    },
+    "notifications": {
+      "title": "Notifications & security",
+      "description": "Centralize incident alerts and campaigns without leaving the panel.",
+      "items": [
+        {
+          "id": "email",
+          "label": "Email updates",
+          "description": "Deposits, withdrawals and contractual changes."
+        },
+        {
+          "id": "push",
+          "label": "Real-time push",
+          "description": "Watched odds, match alerts and promos."
+        },
+        {
+          "id": "security",
+          "label": "Prioritize security alerts",
+          "description": "Automatic lock when suspicious logins surface."
+        }
+      ],
+      "actions": {
+        "reset": "Restore defaults",
+        "save": "Update preferences"
+      }
+    }
+  },
+  "activity": {
+    "meta": {
+      "title": "Recent activity - FrontBet",
+      "description": "Keep an eye on logins, deposits and sensitive actions in real time."
+    },
+    "title": "Recent activity",
+    "description": "Everything that happened on your account over the last days. Receive real-time alerts whenever something sensitive executes.",
+    "cardTitle": "Events",
+    "searchLabel": "Search event",
+    "searchPlaceholder": "Filter by type, device or description",
+    "filtering": "Refining...",
+    "totalTemplate": "{count} record(s)",
+    "emptyState": "No events found for these filters.",
+    "typeLabels": {
+      "login": "Login",
+      "deposit": "Deposit",
+      "config": "Configuration",
+      "withdraw": "Withdrawal"
+    },
+    "filters": {
+      "todos": "All events"
+    },
+    "events": [
+      {
+        "id": "evt-1",
+        "type": "Login",
+        "description": "Session authenticated successfully",
+        "timestamp": "25/11/2025 09:12",
+        "device": "Chrome · São Paulo"
+      },
+      {
+        "id": "evt-2",
+        "type": "Deposit",
+        "description": "PIX received - R$ 500,00",
+        "timestamp": "24/11/2025 22:08",
+        "device": "Mobile · Recife"
+      },
+      {
+        "id": "evt-3",
+        "type": "Configuration",
+        "description": "2FA enabled via authenticator app",
+        "timestamp": "24/11/2025 21:45",
+        "device": "Chrome · São Paulo"
+      },
+      {
+        "id": "evt-4",
+        "type": "Withdrawal",
+        "description": "PIX withdrawal request - R$ 300,00",
+        "timestamp": "23/11/2025 18:17",
+        "device": "Chrome · Curitiba"
+      }
+    ]
+  },
+  "about": {
+    "meta": {
+      "title": "About - FrontBet",
+      "description": "Discover FrontBet's mission and how we keep betting transparent and responsible."
+    },
+    "title": "About us",
+    "description": "FrontBet delivers transparent, fast and responsible betting experiences.",
+    "pillars": [
+      {
+        "title": "Real-time tech",
+        "description": "Infrastructure tuned to update odds in milliseconds."
+      },
+      {
+        "title": "Responsibility",
+        "description": "Limit tools, alerts and financial coaching for safer play."
+      },
+      {
+        "title": "Local expertise",
+        "description": "Portuguese-first support with attention to regional calendars."
+      }
+    ]
+  },
+  "gameDetail": {
+    "loading": "Loading game module..."
+  }
+}

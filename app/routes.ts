@@ -10,5 +10,7 @@ export default [
   route('carteira', 'routes/carteira.tsx'),
   route('loja', 'routes/loja.tsx'),
   route('jogos', 'routes/jogos.tsx'),
+  route('games', 'routes/games.tsx'),
+  route('games/:slug', 'routes/games.$slug.tsx'),
   route('auditoria', 'routes/auditoria.tsx'),
 ] satisfies RouteConfig;

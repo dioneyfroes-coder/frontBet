@@ -1,10 +1,14 @@
+import { memo } from 'react';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/react-router';
 import { NavLink, useNavigate } from 'react-router';
 import { ThemeSwitcher } from '../theme/theme-switcher';
 import { Button } from './ui/button';
+import { useI18n } from '../i18n/i18n-provider';
+import { LanguageSwitcher } from '../i18n/language-switcher';
 
-export function SiteHeader() {
+function SiteHeaderComponent() {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   return (
     <header className="sticky top-0 z-40 border-b border-[color:var(--color-border)] bg-[color:var(--color-bg)]/95 backdrop-blur">
@@ -14,7 +18,7 @@ export function SiteHeader() {
             FrontBet
           </NavLink>
           <span className="hidden rounded-full border border-[color:var(--color-border)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted)] sm:inline-flex">
-            Beta
+            {t('header.betaTag')}
           </span>
         </div>
 
@@ -33,7 +37,7 @@ export function SiteHeader() {
           </svg>
           <input
             type="search"
-            placeholder="Buscar jogos, ligas ou promoções"
+            placeholder={t('header.searchPlaceholder')}
             className="w-full bg-transparent text-[var(--color-text)] placeholder:text-[var(--color-muted)] focus:outline-none"
           />
         </div>
@@ -42,15 +46,16 @@ export function SiteHeader() {
           <SignedOut>
             <SignInButton mode="modal">
               <Button variant="outline" size="sm" className="hidden sm:inline-flex">
-                Entrar
+                {t('header.login')}
               </Button>
             </SignInButton>
           </SignedOut>
           <SignedIn>
             <Button size="sm" className="hidden sm:inline-flex" onClick={() => navigate('/perfil')}>
-              Painel
+              {t('header.dashboard')}
             </Button>
           </SignedIn>
+          <LanguageSwitcher />
           <ThemeSwitcher />
           <SignedIn>
             <UserButton afterSignOutUrl="/" />
@@ -60,3 +65,6 @@ export function SiteHeader() {
     </header>
   );
 }
+
+export const SiteHeader = memo(SiteHeaderComponent);
+SiteHeader.displayName = 'SiteHeader';

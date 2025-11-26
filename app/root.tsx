@@ -12,6 +12,7 @@ import { clerkMiddleware, rootAuthLoader } from '@clerk/react-router/server';
 import type { Route } from './+types/root';
 import './app.css';
 import { ThemeProvider } from './theme/theme-provider';
+import { I18nProvider, useI18n } from './i18n/i18n-provider';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -36,12 +37,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
-        <ThemeProvider>
-          <a href="#main" className="skip-link">
-            Pular para o conteúdo
-          </a>
-          {children}
-        </ThemeProvider>
+        <I18nProvider>
+          <ThemeProvider>
+            <SkipLink />
+            {children}
+          </ThemeProvider>
+        </I18nProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -65,6 +66,15 @@ function RootApp({ loaderData }: Route.ComponentProps) {
 }
 
 export default RootApp;
+
+function SkipLink() {
+  const { t } = useI18n();
+  return (
+    <a href="#main" className="skip-link">
+      {t('common.skipToContent')}
+    </a>
+  );
+}
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = 'Oops!';

@@ -7,10 +7,12 @@ export function PageShell({
   children,
   title,
   description,
+  eyebrow,
 }: {
   children: ReactNode;
   title?: ReactNode;
   description?: ReactNode;
+  eyebrow?: ReactNode;
 }) {
   return (
     <div className="flex min-h-screen flex-col bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -21,6 +23,11 @@ export function PageShell({
           <section className="flex-1">
             <SiteNavMobile />
             <div className="flex flex-col gap-6 rounded-3xl border border-[color:var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm">
+              {eyebrow && (
+                <p className="text-xs uppercase tracking-wide text-[var(--color-muted)]">
+                  {eyebrow}
+                </p>
+              )}
               {title && <h1 className="text-3xl font-bold tracking-tight">{title}</h1>}
               {description && (
                 <p className="max-w-3xl text-lg text-[var(--color-muted)]">{description}</p>

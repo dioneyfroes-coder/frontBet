@@ -1,40 +1,62 @@
 import type { Route } from './+types/perfil';
+import type { ChangeEvent, FormEvent } from 'react';
+import { useState } from 'react';
 import { PageShell } from '../components/page-shell';
 import { FadeIn, SlideUp } from '../components/animation';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Toggle } from '../components/ui/toggle';
 import { requireAuth } from '../utils/auth.server';
-
-const stats = [
-  { label: 'Banca atual', value: 'R$ 2.450,00' },
-  { label: 'Lucro no mês', value: '+18%' },
-  { label: 'Palpites ativos', value: '6' },
-];
-
-const historico = [
-  { evento: 'Brasileirão - Vitória do Bahia', status: 'Ganho', odd: '2.30' },
-  { evento: 'Libertadores - +2.5 gols', status: 'Em aberto', odd: '1.90' },
-  { evento: 'NBA - Handicap Celtics', status: 'Perdido', odd: '1.85' },
-];
+import { useI18n } from '../i18n/i18n-provider';
+import { getPageMeta } from '../i18n/page-copy';
+import type { ProfileCopy, ProfileHistoryStatus } from '../types/i18n';
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: 'Perfil - FrontBet' },
-    {
-      name: 'description',
-      content: 'Acompanhe seu desempenho, histórico e limites personalizados dentro da FrontBet.',
-    },
-  ];
+  const meta = getPageMeta('profile');
+  return [{ title: meta.title }, { name: 'description', content: meta.description }];
 }
 
 export default function Perfil() {
+  const [profileForm, setProfileForm] = useState({
+    name: 'Dioney Froes',
+    email: 'dioney@frontbet.com',
+    phone: '+55 (11) 98221-1010',
+    document: '154.982.000-12',
+    bio: 'Analista de risco apaixonado por automatizar o que posso e entender o que ainda precisa de feeling humano.',
+  });
+  const [profileStatus, setProfileStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [documentStatus, setDocumentStatus] = useState<'idle' | 'uploading' | 'processed'>('idle');
+  const [documentName, setDocumentName] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState({
+    email: true,
+    push: true,
+    security: true,
+  });
+
+  const { messages } = useI18n();
+  const profileCopy: ProfileCopy = messages.profile;
+
+  const handleProfileSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setProfileStatus('saving');
+    window.setTimeout(() => setProfileStatus('saved'), 800);
+  };
+
+  const handleDocUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    setDocumentName(file.name);
+    setDocumentStatus('uploading');
+    window.setTimeout(() => setDocumentStatus('processed'), 1200);
+  };
+
   return (
-    <PageShell
-      title="Seu painel"
-      description="Resumo financeiro, limites personalizados e histórico recente de apostas."
-    >
+    <PageShell title={profileCopy.title} description={profileCopy.description}>
       <section className="grid gap-6 md:grid-cols-3">
-        {stats.map((item, index) => (
+        {profileCopy.stats.map((item, index) => (
           <FadeIn key={item.label} delay={index * 0.1}>
             <Card>
               <CardContent className="p-5">
@@ -50,46 +72,216 @@ export default function Perfil() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-3">
             <div>
-              <CardTitle className="text-xl">Histórico recente</CardTitle>
-              <p className="text-sm text-[var(--color-muted)]">Últimas movimentações do mês</p>
+              <CardTitle className="text-xl">{profileCopy.history.title}</CardTitle>
+              <p className="text-sm text-[var(--color-muted)]">{profileCopy.history.subtitle}</p>
             </div>
             <Button
               variant="ghost"
               size="sm"
               className="text-[var(--color-primary)] hover:text-[var(--color-primary)]"
             >
-              Ver completo
+              {profileCopy.history.cta}
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {historico.map((item) => (
+            {profileCopy.history.entries.map((item) => (
               <div
-                key={item.evento}
+                key={item.event}
                 className="flex flex-wrap items-center justify-between gap-2 border-b border-[color:var(--color-border)] pb-3 last:border-b-0 last:pb-0"
               >
                 <div>
-                  <p className="font-medium">{item.evento}</p>
-                  <p className="text-sm text-[var(--color-muted)]">Odd {item.odd}</p>
+                  <p className="font-medium">{item.event}</p>
+                  <p className="text-sm text-[var(--color-muted)]">
+                    {profileCopy.history.oddTemplate.replace('{odd}', item.odd)}
+                  </p>
                 </div>
                 <span
                   className={`rounded-full px-3 py-1 text-sm ${
-                    item.status === 'Ganho'
+                    item.status === 'won'
                       ? 'bg-emerald-500/20 text-emerald-500'
-                      : item.status === 'Perdido'
+                      : item.status === 'lost'
                         ? 'bg-rose-500/20 text-rose-500'
                         : 'bg-amber-500/20 text-amber-500'
                   }`}
                 >
-                  {item.status}
+                  {profileCopy.history.statusLabels[item.status as ProfileHistoryStatus]}
                 </span>
               </div>
             ))}
           </CardContent>
           <CardFooter className="text-xs text-[var(--color-muted)]">
-            Odds e status são ilustrativos e atualizam automaticamente na plataforma real.
+            {profileCopy.history.footer}
           </CardFooter>
         </Card>
       </SlideUp>
+
+      <FadeIn>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">{profileCopy.personalForm.title}</CardTitle>
+            <p className="text-sm text-[var(--color-muted)]">
+              {profileCopy.personalForm.description}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-5" onSubmit={handleProfileSubmit}>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="profile-name">
+                    {profileCopy.personalForm.fields.name.label}
+                  </label>
+                  <Input
+                    id="profile-name"
+                    value={profileForm.name}
+                    onChange={(event) =>
+                      setProfileForm((current) => ({ ...current, name: event.target.value }))
+                    }
+                    autoComplete="name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="profile-email">
+                    {profileCopy.personalForm.fields.email.label}
+                  </label>
+                  <Input
+                    id="profile-email"
+                    type="email"
+                    value={profileForm.email}
+                    onChange={(event) =>
+                      setProfileForm((current) => ({ ...current, email: event.target.value }))
+                    }
+                    autoComplete="email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="profile-phone">
+                    {profileCopy.personalForm.fields.phone.label}
+                  </label>
+                  <Input
+                    id="profile-phone"
+                    value={profileForm.phone}
+                    onChange={(event) =>
+                      setProfileForm((current) => ({ ...current, phone: event.target.value }))
+                    }
+                    inputMode="tel"
+                    autoComplete="tel"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium" htmlFor="profile-document">
+                    {profileCopy.personalForm.fields.document.label}
+                  </label>
+                  <Input
+                    id="profile-document"
+                    value={profileForm.document}
+                    onChange={(event) =>
+                      setProfileForm((current) => ({ ...current, document: event.target.value }))
+                    }
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium" htmlFor="profile-bio">
+                  {profileCopy.personalForm.fields.notes.label}
+                </label>
+                <textarea
+                  id="profile-bio"
+                  value={profileForm.bio}
+                  onChange={(event) =>
+                    setProfileForm((current) => ({ ...current, bio: event.target.value }))
+                  }
+                  className="min-h-[120px] w-full rounded-2xl border border-[color:var(--color-border)] bg-[var(--color-surface)] p-3 text-sm text-[var(--color-text)] outline-none focus-visible:ring focus-visible:ring-[color:var(--color-primary)]/40"
+                  placeholder={profileCopy.personalForm.fields.notes.placeholder}
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <Button type="submit" disabled={profileStatus === 'saving'}>
+                  {profileStatus === 'saving'
+                    ? profileCopy.personalForm.savingLabel
+                    : profileCopy.personalForm.saveCta}
+                </Button>
+                {profileStatus === 'saved' && (
+                  <span className="text-sm text-emerald-400">
+                    {profileCopy.personalForm.savedNote}
+                  </span>
+                )}
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </FadeIn>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <FadeIn>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">{profileCopy.documentUpload.title}</CardTitle>
+              <p className="text-sm text-[var(--color-muted)]">
+                {profileCopy.documentUpload.description}
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <label
+                htmlFor="document-upload"
+                className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[color:var(--color-border)] bg-[var(--color-surface-muted)] px-6 py-10 text-center"
+              >
+                <p className="text-lg font-semibold text-[var(--color-text)]">
+                  {documentName ?? profileCopy.documentUpload.dropzoneLabel}
+                </p>
+                <p className="text-sm text-[var(--color-muted)]">
+                  {profileCopy.documentUpload.acceptedFormats}
+                </p>
+                <span className="mt-3 rounded-full bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
+                  {profileCopy.documentUpload.statusLabels[documentStatus]}
+                </span>
+              </label>
+              <input
+                id="document-upload"
+                type="file"
+                accept=".pdf,image/*"
+                className="sr-only"
+                onChange={handleDocUpload}
+              />
+              <p className="text-xs text-[var(--color-muted)]">
+                {profileCopy.documentUpload.helper}
+              </p>
+            </CardContent>
+          </Card>
+        </FadeIn>
+
+        <FadeIn delay={0.1}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">{profileCopy.notifications.title}</CardTitle>
+              <p className="text-sm text-[var(--color-muted)]">
+                {profileCopy.notifications.description}
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {profileCopy.notifications.items.map((item) => {
+                const key = item.id as keyof typeof notifications;
+                return (
+                  <Toggle
+                    key={item.id}
+                    label={item.label}
+                    description={item.description}
+                    checked={notifications[key]}
+                    onChange={(next) =>
+                      setNotifications((current) => ({ ...current, [key]: next }))
+                    }
+                  />
+                );
+              })}
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" size="sm">
+                  {profileCopy.notifications.actions.reset}
+                </Button>
+                <Button size="sm">{profileCopy.notifications.actions.save}</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </FadeIn>
+      </div>
     </PageShell>
   );
 }

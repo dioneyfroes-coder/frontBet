@@ -19,6 +19,8 @@
       "routes/carteira": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/loja": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/jogos": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/games": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/games.$slug": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/auditoria": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
@@ -109,6 +111,24 @@
           "runtime": "nodejs"
         }
       },
+      "routes/games": {
+        "id": "routes/games",
+        "parentId": "root",
+        "file": "app/routes/games.tsx",
+        "path": "games",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/games.$slug": {
+        "id": "routes/games.$slug",
+        "parentId": "root",
+        "file": "app/routes/games.$slug.tsx",
+        "path": "games/:slug",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
       "routes/auditoria": {
         "id": "routes/auditoria",
         "parentId": "root",
@@ -191,6 +211,18 @@
         "file": "routes/jogos.tsx",
         "path": "jogos"
       },
+      "routes/games": {
+        "id": "routes/games",
+        "parentId": "root",
+        "file": "routes/games.tsx",
+        "path": "games"
+      },
+      "routes/games.$slug": {
+        "id": "routes/games.$slug",
+        "parentId": "root",
+        "file": "routes/games.$slug.tsx",
+        "path": "games/:slug"
+      },
       "routes/auditoria": {
         "id": "routes/auditoria",
         "parentId": "root",
@@ -246,6 +278,14 @@
           {
             "file": "routes/jogos.tsx",
             "path": "jogos"
+          },
+          {
+            "file": "routes/games.tsx",
+            "path": "games"
+          },
+          {
+            "file": "routes/games.$slug.tsx",
+            "path": "games/:slug"
           },
           {
             "file": "routes/auditoria.tsx",

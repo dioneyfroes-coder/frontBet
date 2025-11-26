@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, useTransition } from 'react';
-import type { FormEvent } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useState, useTransition } from 'react';
+import type { ChangeEvent, FormEvent, MouseEvent } from 'react';
 import { PageShell } from '../components/page-shell';
 import {
   Card,
@@ -14,6 +14,9 @@ import { Button } from '../components/ui/button';
 import { FadeIn } from '../components/animation';
 import { requireAuth } from '../utils/auth.server';
 import type { LiveChannel, PixRequest, Transaction, TransactionType } from '../types/wallet';
+import { useI18n } from '../i18n/i18n-provider';
+import { getPageMeta } from '../i18n/page-copy';
+import type { Route } from './+types/carteira';
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -70,6 +73,8 @@ const initialTransactions: Transaction[] = [
 ];
 
 const liveChannels: LiveChannel[] = ['PIX', 'Web', 'Automação'];
+const historyFilters: Array<'todos' | TransactionType> = ['todos', 'deposit', 'withdraw', 'bonus'];
+const channelOrder = ['PIX', 'Web', 'Automação'] as const;
 
 const createPixCode = () => {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -97,11 +102,25 @@ function createSimulatedTransaction(): Transaction {
   };
 }
 
-export async function loader(args: Parameters<typeof requireAuth>[0]) {
-  await requireAuth(args);
-  return null;
+export function meta({}: Route.MetaArgs) {
+  const meta = getPageMeta('wallet');
+  return [{ title: meta.title }, { name: 'description', content: meta.description }];
 }
+
 export default function Carteira() {
+  const { messages } = useI18n();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const walletCopy = messages.wallet as Record<string, any>;
+  const historyCopy = walletCopy.history;
+  const summaryCard = walletCopy.summaryCard;
+  const monitoringCopy = walletCopy.monitoringCard;
+  const depositCopy = walletCopy.depositCard;
+  const withdrawCopy = walletCopy.withdrawCard;
+  const statusCopy = walletCopy.statuses;
+  const connectionCopy = walletCopy.connectionStates;
+  const channelLabels = walletCopy.channels;
+  const errorsCopy = walletCopy.errors;
+
   const [balance, setBalance] = useState(2450.15);
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
   const [lastUpdate, setLastUpdate] = useState<Date>(() => new Date());
@@ -120,6 +139,10 @@ export default function Carteira() {
     message: string;
   } | null>(null);
   const [isProcessingWithdraw, startWithdrawTransition] = useTransition();
+  const [historySearch, setHistorySearch] = useState('');
+  const [historyType, setHistoryType] = useState<'todos' | TransactionType>('todos');
+  const deferredHistorySearch = useDeferredValue(historySearch);
+  const [isFilteringHistory, startHistoryTransition] = useTransition();
 
   useEffect(() => {
     let syncTimeout: number | null = null;
@@ -147,19 +170,23 @@ export default function Carteira() {
     return () => clearInterval(timer);
   }, []);
 
-  const parseAmount = (value: string) => {
+  const parseAmount = useCallback((value: string) => {
     const normalized = value.replace(/\./g, '').replace(',', '.');
     const numeric = Number(normalized);
     return Number.isFinite(numeric) ? Number(numeric.toFixed(2)) : NaN;
-  };
+  }, []);
 
   const timeSinceUpdate = useMemo(() => {
     const diff = Math.max(0, Math.floor((nowTick - lastUpdate.getTime()) / 1000));
-    if (diff < 5) return 'atualizado agora';
-    if (diff < 60) return `há ${diff}s`;
+    if (diff < 5) {
+      return walletCopy.timeSince.updatedNow;
+    }
+    if (diff < 60) {
+      return walletCopy.timeSince.secondsAgo.replace('{count}', String(diff));
+    }
     const minutes = Math.floor(diff / 60);
-    return `há ${minutes}min`;
-  }, [lastUpdate, nowTick]);
+    return walletCopy.timeSince.minutesAgo.replace('{count}', String(minutes));
+  }, [lastUpdate, nowTick, walletCopy.timeSince]);
 
   const pendingTransactions = useMemo(
     () => transactions.filter((tx) => tx.status !== 'confirmado').length,
@@ -171,136 +198,183 @@ export default function Carteira() {
     [transactions]
   );
 
-  const handleGeneratePix = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    startPixTransition(() => {
-      const amount = parseAmount(depositAmount);
-      if (Number.isNaN(amount) || amount < 10) {
-        setDepositError('Informe um valor mínimo de R$ 10,00.');
-        setPixRequest(null);
-        return;
+  const filteredTransactions = useMemo(() => {
+    const term = deferredHistorySearch.trim().toLowerCase();
+    return transactions.filter((tx) => {
+      const matchesType = historyType === 'todos' || tx.type === historyType;
+      if (!matchesType) {
+        return false;
       }
-      if (amount > 15000) {
-        setDepositError('O limite por operação é R$ 15.000,00.');
-        setPixRequest(null);
-        return;
+      if (!term) {
+        return true;
       }
-      setDepositError(null);
-      const code = `BRPIX-${createPixCode()}`;
-      const expiresAt = new Date(Date.now() + 1000 * 60 * 15);
-      setPixRequest({ code, amount, expiresAt: expiresAt.toISOString(), status: 'gerado' });
-      window.setTimeout(() => {
-        setPixRequest((current) =>
-          current && current.code === code ? { ...current, status: 'confirmado' } : current
-        );
+      const haystack = `${tx.reference} ${tx.channel} ${tx.status}`.toLowerCase();
+      return haystack.includes(term);
+    });
+  }, [transactions, historyType, deferredHistorySearch]);
+
+  const handleHistoryTypeChange = useCallback(
+    (type: 'todos' | TransactionType) => {
+      startHistoryTransition(() => {
+        setHistoryType(type);
+      });
+    },
+    [startHistoryTransition]
+  );
+
+  const handleHistorySearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setHistorySearch(event.target.value);
+  }, []);
+
+  const handleHistoryFilterClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      const filter = event.currentTarget.dataset.filter as 'todos' | TransactionType | undefined;
+      if (!filter) return;
+      handleHistoryTypeChange(filter);
+    },
+    [handleHistoryTypeChange]
+  );
+
+  const handleGeneratePix = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      startPixTransition(() => {
+        const amount = parseAmount(depositAmount);
+        if (Number.isNaN(amount) || amount < 10) {
+          setDepositError(errorsCopy.depositMin);
+          setPixRequest(null);
+          return;
+        }
+        if (amount > 15000) {
+          setDepositError(errorsCopy.depositMax);
+          setPixRequest(null);
+          return;
+        }
+        setDepositError(null);
+        const code = `BRPIX-${createPixCode()}`;
+        const expiresAt = new Date(Date.now() + 1000 * 60 * 15);
+        setPixRequest({ code, amount, expiresAt: expiresAt.toISOString(), status: 'gerado' });
+        window.setTimeout(() => {
+          setPixRequest((current) =>
+            current && current.code === code ? { ...current, status: 'confirmado' } : current
+          );
+          setTransactions((current) => {
+            const tx: Transaction = {
+              id: `TX-${code.slice(-4)}`,
+              type: 'deposit',
+              reference: 'Depósito PIX confirmado automaticamente',
+              amount,
+              status: 'confirmado',
+              timestamp: new Date().toISOString(),
+              channel: 'PIX',
+            };
+            setBalance((value) => value + amount);
+            return [tx, ...current].slice(0, 15);
+          });
+        }, 6000);
+      });
+    },
+    [depositAmount, errorsCopy.depositMax, errorsCopy.depositMin, parseAmount, startPixTransition]
+  );
+
+  const handleWithdraw = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      startWithdrawTransition(() => {
+        const amount = parseAmount(withdrawAmount);
+        if (Number.isNaN(amount) || amount < 20) {
+          setWithdrawNote({ status: 'error', message: errorsCopy.withdrawMin });
+          return;
+        }
+        if (amount > balance - 50) {
+          setWithdrawNote({ status: 'error', message: errorsCopy.withdrawBalance });
+          return;
+        }
+        if (!pixKey || pixKey.length < 6) {
+          setWithdrawNote({ status: 'error', message: errorsCopy.withdrawPixKey });
+          return;
+        }
+        setWithdrawNote({ status: 'success', message: withdrawCopy.successNote });
+        const reference = `Saque para ${pixKey}`;
         setTransactions((current) => {
           const tx: Transaction = {
-            id: `TX-${code.slice(-4)}`,
-            type: 'deposit',
-            reference: 'Depósito PIX confirmado automaticamente',
+            id: `TX-${Math.floor(Math.random() * 99999)}`,
+            type: 'withdraw',
+            reference,
             amount,
-            status: 'confirmado',
+            status: 'processando',
             timestamp: new Date().toISOString(),
-            channel: 'PIX',
+            channel: 'Web',
           };
-          setBalance((value) => value + amount);
+          setBalance((value) => value - amount);
           return [tx, ...current].slice(0, 15);
         });
-      }, 6000);
-    });
-  };
-
-  const handleWithdraw = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    startWithdrawTransition(() => {
-      const amount = parseAmount(withdrawAmount);
-      if (Number.isNaN(amount) || amount < 20) {
-        setWithdrawNote({ status: 'error', message: 'Valor mínimo para saque é R$ 20,00.' });
-        return;
-      }
-      if (amount > balance - 50) {
-        setWithdrawNote({ status: 'error', message: 'Saldo insuficiente para concluir o saque.' });
-        return;
-      }
-      if (!pixKey || pixKey.length < 6) {
-        setWithdrawNote({ status: 'error', message: 'Informe uma chave PIX válida.' });
-        return;
-      }
-      setWithdrawNote({
-        status: 'success',
-        message: 'Solicitação enviada para validação antifraude.',
+        window.setTimeout(() => {
+          setTransactions((current) =>
+            current.map((tx) =>
+              tx.reference === reference && tx.status === 'processando'
+                ? { ...tx, status: 'confirmado' }
+                : tx
+            )
+          );
+        }, 7000);
       });
-      const reference = `Saque para ${pixKey}`;
-      setTransactions((current) => {
-        const tx: Transaction = {
-          id: `TX-${Math.floor(Math.random() * 99999)}`,
-          type: 'withdraw',
-          reference,
-          amount,
-          status: 'processando',
-          timestamp: new Date().toISOString(),
-          channel: 'Web',
-        };
-        setBalance((value) => value - amount);
-        return [tx, ...current].slice(0, 15);
-      });
-      window.setTimeout(() => {
-        setTransactions((current) =>
-          current.map((tx) =>
-            tx.reference === reference && tx.status === 'processando'
-              ? { ...tx, status: 'confirmado' }
-              : tx
-          )
-        );
-      }, 7000);
-    });
-  };
+    },
+    [
+      balance,
+      errorsCopy,
+      parseAmount,
+      pixKey,
+      startWithdrawTransition,
+      withdrawAmount,
+      withdrawCopy.successNote,
+    ]
+  );
 
   return (
-    <PageShell
-      title="Carteira PIX"
-      description="Acompanhe saldo, fluxos PIX e saques com validação contínua e sinais de integridade."
-    >
+    <PageShell title={walletCopy.title} description={walletCopy.description}>
       <div className="grid gap-6 lg:grid-cols-[1.4fr,0.8fr]">
         <FadeIn>
           <Card>
             <CardHeader className="flex flex-row items-start justify-between gap-4">
               <div>
-                <CardTitle>Saldo disponível</CardTitle>
-                <CardDescription>Atualizado automaticamente via stream seguro.</CardDescription>
+                <CardTitle>{summaryCard.title}</CardTitle>
+                <CardDescription>{summaryCard.description}</CardDescription>
               </div>
               <div className="flex flex-col items-end text-sm text-[var(--color-muted)]">
                 <span
                   className={connectionState === 'online' ? 'text-emerald-400' : 'text-amber-300'}
                 >
-                  {connectionState === 'online' ? 'Em tempo real' : 'Sincronizando dados'}
+                  {connectionCopy[connectionState]}
                 </span>
                 <span>{timeSinceUpdate}</span>
               </div>
             </CardHeader>
             <CardContent className="grid gap-6 md:grid-cols-2">
               <div>
-                <p className="text-sm text-[var(--color-muted)]">Saldo líquido</p>
+                <p className="text-sm text-[var(--color-muted)]">{summaryCard.liquidLabel}</p>
                 <p className="text-4xl font-bold">{formatBRL(balance)}</p>
               </div>
               <div>
-                <p className="text-sm text-[var(--color-muted)]">Último depósito</p>
+                <p className="text-sm text-[var(--color-muted)]">{summaryCard.lastDepositLabel}</p>
                 <p className="text-xl font-semibold">
-                  {lastDeposit ? formatBRL(lastDeposit.amount) : 'Sem registros'}
+                  {lastDeposit ? formatBRL(lastDeposit.amount) : summaryCard.noRecords}
                 </p>
                 <p className="text-xs text-[var(--color-muted)]">
                   {lastDeposit ? formatHour(lastDeposit.timestamp) : '—'}
                 </p>
               </div>
             </CardContent>
-            <CardFooter className="flex items-center justify-between text-sm text-[var(--color-muted)]">
-              <span>{pendingTransactions} movimentações aguardando confirmação</span>
+            <CardFooter className="flex flex-col gap-2 text-sm text-[var(--color-muted)] md:flex-row md:items-center md:justify-between">
               <span>
-                Canal ativo:
-                {liveChannels.map((channel) => (
-                  <span key={channel} className="ml-2 inline-flex items-center gap-1 text-xs">
+                {summaryCard.pendingTemplate.replace('{count}', String(pendingTransactions))}
+              </span>
+              <span className="flex flex-wrap items-center gap-2">
+                <span>{summaryCard.activeChannels}</span>
+                {channelOrder.map((channel) => (
+                  <span key={channel} className="inline-flex items-center gap-1 text-xs">
                     <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
-                    {channel}
+                    {channelLabels[channel] ?? channel}
                   </span>
                 ))}
               </span>
@@ -310,25 +384,33 @@ export default function Carteira() {
         <FadeIn>
           <Card>
             <CardHeader>
-              <CardTitle>Monitoramento</CardTitle>
-              <CardDescription>Estado do stream PIX e variações recentes.</CardDescription>
+              <div>
+                <CardTitle>{monitoringCopy.title}</CardTitle>
+                <CardDescription>{monitoringCopy.description}</CardDescription>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
-              <div className="rounded-lg border border-[var(--color-border)] p-3">
-                <p className="font-semibold text-[var(--color-foreground)]">Orquestrador</p>
+              <div className="rounded-lg border border-[color:var(--color-border)] p-3">
+                <p className="font-semibold text-[var(--color-foreground)]">
+                  {monitoringCopy.orchestratorLabel}
+                </p>
                 <p className="text-[var(--color-muted)]">
                   {connectionState === 'online'
-                    ? 'Consumo estável com latência média de 240ms.'
-                    : 'Sincronizando novamente para recuperar latência otimizada.'}
+                    ? monitoringCopy.onlineCopy
+                    : monitoringCopy.syncingCopy}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-lg bg-[var(--color-muted-foreground)]/5 p-3">
-                  <p className="text-xs text-[var(--color-muted)]">Transações / 24h</p>
+                  <p className="text-xs text-[var(--color-muted)]">
+                    {monitoringCopy.transactionsLabel}
+                  </p>
                   <p className="text-2xl font-semibold">286</p>
                 </div>
                 <div className="rounded-lg bg-[var(--color-muted-foreground)]/5 p-3">
-                  <p className="text-xs text-[var(--color-muted)]">Taxa de sucesso</p>
+                  <p className="text-xs text-[var(--color-muted)]">
+                    {monitoringCopy.successRateLabel}
+                  </p>
                   <p className="text-2xl font-semibold text-emerald-400">98,7%</p>
                 </div>
               </div>
@@ -341,16 +423,16 @@ export default function Carteira() {
         <FadeIn>
           <Card aria-labelledby="deposito-pix">
             <CardHeader>
-              <CardTitle id="deposito-pix">Depositar via PIX</CardTitle>
-              <CardDescription>
-                Gere um código instantâneo com expiração automática.
-              </CardDescription>
+              <div>
+                <CardTitle id="deposito-pix">{depositCopy.title}</CardTitle>
+                <CardDescription>{depositCopy.description}</CardDescription>
+              </div>
             </CardHeader>
             <CardContent>
               <form className="space-y-4" onSubmit={handleGeneratePix}>
                 <div className="space-y-2">
                   <label className="text-sm font-medium" htmlFor="deposit-value">
-                    Valor desejado
+                    {depositCopy.amountLabel}
                   </label>
                   <Input
                     id="deposit-value"
@@ -361,21 +443,18 @@ export default function Carteira() {
                   {depositError && <p className="text-sm text-red-400">{depositError}</p>}
                 </div>
                 <Button type="submit" disabled={isGeneratingPix} className="w-full">
-                  {isGeneratingPix ? 'Gerando código...' : 'Gerar QR Code PIX'}
+                  {isGeneratingPix ? depositCopy.submitting : depositCopy.submit}
                 </Button>
               </form>
               {pixRequest && (
-                <div className="mt-6 rounded-lg border border-dashed border-[var(--color-border)] p-4 text-sm">
+                <div className="mt-6 rounded-lg border border-dashed border-[color:var(--color-border)] p-4 text-sm">
                   <p className="font-semibold text-[var(--color-foreground)]">{pixRequest.code}</p>
                   <p className="text-[var(--color-muted)]">
-                    Valor: {formatBRL(pixRequest.amount)} · expira{' '}
-                    {formatHour(pixRequest.expiresAt)}
+                    {depositCopy.summaryLabel}: {formatBRL(pixRequest.amount)} ·{' '}
+                    {depositCopy.expiresLabel} {formatHour(pixRequest.expiresAt)}
                   </p>
                   <p className="text-xs text-[var(--color-muted)]">
-                    Status:{' '}
-                    {pixRequest.status === 'gerado'
-                      ? 'Aguardando pagamento'
-                      : 'Confirmado automaticamente'}
+                    {depositCopy.pixStatus[pixRequest.status]}
                   </p>
                 </div>
               )}
@@ -385,14 +464,16 @@ export default function Carteira() {
         <FadeIn>
           <Card aria-labelledby="saque-pix">
             <CardHeader>
-              <CardTitle id="saque-pix">Solicitar saque PIX</CardTitle>
-              <CardDescription>Validação antifraude em até 5 minutos.</CardDescription>
+              <div>
+                <CardTitle id="saque-pix">{withdrawCopy.title}</CardTitle>
+                <CardDescription>{withdrawCopy.description}</CardDescription>
+              </div>
             </CardHeader>
             <CardContent>
               <form className="space-y-4" onSubmit={handleWithdraw}>
                 <div className="space-y-2">
                   <label className="text-sm font-medium" htmlFor="withdraw-value">
-                    Valor a sacar
+                    {withdrawCopy.amountLabel}
                   </label>
                   <Input
                     id="withdraw-value"
@@ -403,7 +484,7 @@ export default function Carteira() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium" htmlFor="pix-key">
-                    Chave PIX de destino
+                    {withdrawCopy.pixKeyLabel}
                   </label>
                   <Input
                     id="pix-key"
@@ -412,7 +493,7 @@ export default function Carteira() {
                   />
                 </div>
                 <Button type="submit" disabled={isProcessingWithdraw} className="w-full">
-                  {isProcessingWithdraw ? 'Processando...' : 'Solicitar saque'}
+                  {isProcessingWithdraw ? withdrawCopy.submitting : withdrawCopy.submit}
                 </Button>
               </form>
               {withdrawNote && (
@@ -432,56 +513,117 @@ export default function Carteira() {
       <FadeIn>
         <Card aria-labelledby="historico">
           <CardHeader>
-            <CardTitle id="historico">Histórico recente</CardTitle>
-            <CardDescription>
-              Acompanhe depósitos, saques e bonificações em tempo real.
-            </CardDescription>
+            <div>
+              <CardTitle id="historico">{historyCopy.title}</CardTitle>
+              <CardDescription>{historyCopy.description}</CardDescription>
+            </div>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-left text-[var(--color-muted)]">
-                <tr>
-                  <th className="py-2 pr-4">Movimentação</th>
-                  <th className="py-2 pr-4">Valor</th>
-                  <th className="py-2 pr-4">Canal</th>
-                  <th className="py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((tx) => (
-                  <tr key={tx.id} className="border-t border-[var(--color-border)]">
-                    <td className="py-3 pr-4">
-                      <p className="font-medium text-[var(--color-foreground)]">{tx.reference}</p>
-                      <p className="text-xs text-[var(--color-muted)]">
-                        {formatHour(tx.timestamp)}
-                      </p>
-                    </td>
-                    <td className="py-3 pr-4 font-semibold">
-                      {tx.type === 'withdraw'
-                        ? `- ${formatBRL(tx.amount)}`
-                        : `+ ${formatBRL(tx.amount)}`}
-                    </td>
-                    <td className="py-3 pr-4 text-[var(--color-muted)]">{tx.channel}</td>
-                    <td className="py-3">
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                          tx.status === 'confirmado'
-                            ? 'bg-emerald-500/10 text-emerald-300'
-                            : tx.status === 'processando'
-                              ? 'bg-amber-500/10 text-amber-300'
-                              : 'bg-red-500/10 text-red-300'
-                        }`}
-                      >
-                        {tx.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+              <div className="flex-1">
+                <Input
+                  label={historyCopy.searchLabel}
+                  placeholder={historyCopy.searchPlaceholder}
+                  value={historySearch}
+                  onChange={handleHistorySearchChange}
+                />
+              </div>
+              <div className="text-sm text-[var(--color-muted)]">
+                {isFilteringHistory
+                  ? historyCopy.filtering
+                  : historyCopy.totalTemplate.replace(
+                      '{count}',
+                      String(filteredTransactions.length)
+                    )}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {historyFilters.map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  aria-pressed={historyType === filter}
+                  data-filter={filter}
+                  onClick={handleHistoryFilterClick}
+                  className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                    historyType === filter
+                      ? 'border-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10 text-[color:var(--color-primary)]'
+                      : 'border-[color:var(--color-border)] text-[var(--color-muted)] hover:border-[color:var(--color-primary)]/30'
+                  }`}
+                >
+                  {filter === 'todos'
+                    ? historyCopy.filters.todos
+                    : filter === 'deposit'
+                      ? historyCopy.filters.deposit
+                      : filter === 'withdraw'
+                        ? historyCopy.filters.withdraw
+                        : historyCopy.filters.bonus}
+                </button>
+              ))}
+            </div>
+            {filteredTransactions.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-[color:var(--color-border)] p-6 text-sm text-[var(--color-muted)]">
+                {historyCopy.emptyState}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="text-left text-[var(--color-muted)]">
+                    <tr>
+                      <th className="py-2 pr-4">{historyCopy.tableHeaders.movement}</th>
+                      <th className="py-2 pr-4">{historyCopy.tableHeaders.amount}</th>
+                      <th className="py-2 pr-4">{historyCopy.tableHeaders.channel}</th>
+                      <th className="py-2">{historyCopy.tableHeaders.status}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTransactions.map((tx) => (
+                      <tr key={tx.id} className="border-t border-[var(--color-border)]">
+                        <td className="py-3 pr-4">
+                          <p className="font-medium text-[var(--color-foreground)]">
+                            {historyCopy.referenceMap[
+                              tx.reference as keyof typeof historyCopy.referenceMap
+                            ] ?? tx.reference}
+                          </p>
+                          <p className="text-xs text-[var(--color-muted)]">
+                            {formatHour(tx.timestamp)}
+                          </p>
+                        </td>
+                        <td className="py-3 pr-4 font-semibold">
+                          {tx.type === 'withdraw'
+                            ? `- ${formatBRL(tx.amount)}`
+                            : `+ ${formatBRL(tx.amount)}`}
+                        </td>
+                        <td className="py-3 pr-4 text-[var(--color-muted)]">
+                          {channelLabels[tx.channel] ?? tx.channel}
+                        </td>
+                        <td className="py-3">
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                              tx.status === 'confirmado'
+                                ? 'bg-emerald-500/10 text-emerald-300'
+                                : tx.status === 'processando'
+                                  ? 'bg-amber-500/10 text-amber-300'
+                                  : 'bg-red-500/10 text-red-300'
+                            }`}
+                          >
+                            {statusCopy[tx.status] ?? tx.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
       </FadeIn>
     </PageShell>
   );
+}
+
+export async function loader(args: Parameters<typeof requireAuth>[0]) {
+  await requireAuth(args);
+  return null;
 }

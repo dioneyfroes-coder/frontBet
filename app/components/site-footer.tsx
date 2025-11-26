@@ -1,20 +1,27 @@
-export function SiteFooter() {
+import { memo } from 'react';
+import { useI18n } from '../i18n/i18n-provider';
+
+function SiteFooterComponent() {
+  const { t } = useI18n();
+  const disclaimer = t('footer.disclaimer').replace('{year}', String(new Date().getFullYear()));
+
   return (
     <footer className="border-t border-[color:var(--color-border)] bg-[var(--color-surface)] text-[var(--color-muted)]">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">
         <p className="font-semibold text-[var(--color-text)]">FrontBet</p>
-        <p>
-          © {new Date().getFullYear()} FrontBet. Todas as probabilidades exibidas são ilustrativas.
-        </p>
+        <p>{disclaimer}</p>
         <div className="flex gap-4">
           <a href="/sobre" className="hover:text-[var(--color-text)]">
-            Sobre
+            {t('footer.about')}
           </a>
           <a href="/contato" className="hover:text-[var(--color-text)]">
-            Contato
+            {t('footer.contact')}
           </a>
         </div>
       </div>
     </footer>
   );
 }
+
+export const SiteFooter = memo(SiteFooterComponent);
+SiteFooter.displayName = 'SiteFooter';

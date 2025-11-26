@@ -10,7 +10,8 @@
     "start": "dotenv -e .env -- react-router-serve ./build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "export:i18n": "tsx scripts/export-translations.ts"
   },
   "dependencies": {
     "@clerk/react-router": "^2.3.0",
@@ -46,6 +47,7 @@
     "jsdom": "^27.2.0",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.13",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4",
