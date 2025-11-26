@@ -145,7 +145,7 @@
     "basename": "/",
     "buildDirectory": "/home/dioney/Documentos/bet/frontBet/build",
     "future": {
-      "v8_middleware": true,
+      "v8_middleware": false,
       "unstable_optimizeDeps": false,
       "unstable_splitRouteModules": false,
       "unstable_subResourceIntegrity": false,

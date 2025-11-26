@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { SiteHeader } from '../site-header';
 import { I18nProvider } from '../../i18n/i18n-provider';
+import { LOCALE_STORAGE_KEY } from '../../i18n/config';
 
 const mockNavigate = vi.fn();
 
@@ -32,10 +33,12 @@ vi.mock('../../i18n/language-switcher', () => ({
 
 beforeEach(() => {
   mockNavigate.mockClear();
+  window.localStorage.setItem(LOCALE_STORAGE_KEY, 'pt-BR');
 });
 
 afterEach(() => {
   cleanup();
+  window.localStorage.removeItem(LOCALE_STORAGE_KEY);
 });
 
 describe('SiteHeader', () => {

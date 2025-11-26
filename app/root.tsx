@@ -7,7 +7,7 @@ import {
   ScrollRestoration,
 } from 'react-router';
 import { ClerkProvider } from '@clerk/react-router';
-import { clerkMiddleware, rootAuthLoader } from '@clerk/react-router/server';
+import { rootAuthLoader } from '@clerk/react-router/server';
 
 import type { Route } from './+types/root';
 import './app.css';
@@ -54,8 +54,6 @@ export const loader = (args: Route.LoaderArgs) =>
   rootAuthLoader(args, {
     signInUrl: '/login',
   });
-
-export const middleware: Route.MiddlewareFunction[] = [clerkMiddleware()];
 
 function RootApp({ loaderData }: Route.ComponentProps) {
   return (
