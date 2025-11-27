@@ -38,6 +38,9 @@ export const useWalletStore = create<WalletState>((set: (s: Partial<WalletState>
       set({ wallet: data, loading: false });
     } catch (err) {
       const e = err as { message?: string } | undefined;
+      // log for test debugging
+      // eslint-disable-next-line no-console
+      console.warn('[useWalletStore] fetchWallet error:', err);
       set({ error: e?.message ?? String(err), loading: false });
     }
   },
