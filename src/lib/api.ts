@@ -21,6 +21,8 @@ export class ApiError extends Error {
   }
 }
 
+import { getAccessToken, refreshTokens, setTokens } from './token';
+
 export async function apiFetch<T = unknown>(path: string, opts: RequestOptions = {}, signal?: AbortSignal): Promise<T> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
 
@@ -28,6 +30,14 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
     Accept: 'application/json',
     ...(opts.headers as Record<string, string> | undefined),
   };
+
+  // attach Authorization header unless caller opted out
+  const skipAuth = Boolean((opts as any).skipAuth);
+  if (!skipAuth) {
+    // try to attach existing access token
+    const token = getAccessToken() || (process.env.INTEGRATION_AUTH_TOKEN as string | undefined);
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+  }
 
   let body: BodyInit | undefined;
   if (opts.json !== undefined) {
@@ -49,12 +59,22 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
   })();
 
   try {
-    const res = await fetch(url, {
+    let res = await fetch(url, {
       method: opts.method ?? 'GET',
       headers,
       body,
       signal: finalSignal,
     });
+
+    // If unauthorized and we didn't skip auth, try to refresh once and retry
+    if (res.status === 401 && !skipAuth) {
+      const refreshed = await refreshTokens(API_BASE);
+      if (refreshed) {
+        // update header and retry once
+        headers['Authorization'] = `Bearer ${refreshed}`;
+        res = await fetch(url, { method: opts.method ?? 'GET', headers, body, signal: finalSignal });
+      }
+    }
 
     const text = await res.text();
     const contentType = res.headers.get('content-type') ?? '';
