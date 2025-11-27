@@ -9,6 +9,11 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      # Set the backend base URL from repository secrets. Add NEXT_PUBLIC_API_BASE_URL in repository Settings → Secrets.
+      NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+      # Optional: set a request timeout in milliseconds
+      API_TIMEOUT_MS: ${{ secrets.API_TIMEOUT_MS || '10000' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

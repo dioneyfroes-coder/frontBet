@@ -82,3 +82,15 @@ export NEXT_PUBLIC_USE_MOCKS=true
 # rodar app
 npm run dev
 ```
+
+Integração contínua (GitHub Actions)
+
+ - Defina `NEXT_PUBLIC_API_BASE_URL` e `API_TIMEOUT_MS` como *secrets* no repositório (Settings → Secrets). O workflow `CI` já lê `NEXT_PUBLIC_API_BASE_URL` para validar e executar testes com o valor correto.
+ - Exemplo de como adicionar secret via CLI (local):
+
+```
+gh secret set NEXT_PUBLIC_API_BASE_URL --body "https://backbet.onrender.com"
+gh secret set API_TIMEOUT_MS --body "10000"
+```
+
+ - O workflow `CI` roda lint, checagem de tipos, testes, build (quando aplicável) e valida o arquivo `docs da backend/openapi.json`.
