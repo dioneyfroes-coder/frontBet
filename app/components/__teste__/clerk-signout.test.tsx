@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { describe, it, vi, afterEach, expect } from 'vitest';
 
 import ClerkTokenRegistrar from '../clerk-token-registrar';
-import * as tokenModule from '../../../src/lib/token';
+import * as tokenModule from '../../lib/token';
 
 // Create a mock Clerk where we can trigger signOut via stored callback
 vi.mock('@clerk/react-router', () => {

@@ -1,0 +1,6 @@
+{
+  "wallet": { "id": "w1", "userId": "u1", "balance": { "amount": 1000, "currency": "BRL" }, "createdAt": "2025-01-01T00:00:00Z" },
+  "games": [],
+  "transactions": [],
+  "bets": []
+}
