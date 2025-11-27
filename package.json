@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "typecheck": "react-router typegen && tsc",
     "gen:api": "npx openapi-typescript \"docs da backend/openapi.json\" --output src/lib/api-client/types.ts",
+    "gen:zod": "tsx scripts/generate-zod-schemas.ts",
     "export:i18n": "tsx scripts/export-translations.ts"
   },
   "dependencies": {
@@ -48,6 +49,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "jsdom": "^27.2.0",
+    "msw": "^2.12.3",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.13",
     "tsx": "^4.20.6",

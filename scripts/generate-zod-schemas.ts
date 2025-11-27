@@ -2,7 +2,11 @@
 import fs from 'fs';
 import path from 'path';
 
-type OpenAPIDoc = Record<string, unknown>;
+type OpenAPIDoc = {
+  components?: {
+    schemas?: Record<string, unknown>;
+  };
+};
 
 const input = path.resolve(process.cwd(), 'docs da backend/openapi.json');
 const outDir = path.resolve(process.cwd(), 'src/lib/schemas');
