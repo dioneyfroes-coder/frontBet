@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 // Default API base points to the deployed backend. Use `NEXT_PUBLIC_API_BASE_URL` in env for browser builds.
-// Keep older env names as fallback for compatibility: `PUBLIC_BACKEND_API_BASE_URL` and `URL_BACKEND`.
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.PUBLIC_BACKEND_API_BASE_URL ?? process.env.URL_BACKEND ?? 'https://backbet.onrender.com';
+// NOTE (breaking): fallbacks to legacy env names were removed; ensure `NEXT_PUBLIC_API_BASE_URL` is set in your environment.
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://backbet.onrender.com';
 // Optional request timeout (ms). If 0 or unset, no timeout is applied.
 const API_TIMEOUT_MS = Number(process.env.API_TIMEOUT_MS ?? '0');
 

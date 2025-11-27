@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fetch = globalThis.fetch || require('node-fetch');
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.PUBLIC_BACKEND_API_BASE_URL || process.env.URL_BACKEND || 'https://backbet.onrender.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://backbet.onrender.com';
 
 async function main() {
   const url = `${API_BASE.replace(/\/+$/, '')}/api/wallets/me`;
