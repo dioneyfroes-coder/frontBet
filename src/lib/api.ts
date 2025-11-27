@@ -9,6 +9,7 @@ const API_TIMEOUT_MS = Number(process.env.API_TIMEOUT_MS ?? '0');
 export type RequestOptions = Omit<RequestInit, 'body'> & {
   json?: unknown;
   validate?: z.ZodTypeAny;
+  skipAuth?: boolean;
 };
 
 export class ApiError extends Error {
@@ -21,7 +22,7 @@ export class ApiError extends Error {
   }
 }
 
-import { getAccessToken, refreshTokens, setTokens } from './token';
+import { getAccessToken, refreshTokens } from './token';
 
 export async function apiFetch<T = unknown>(path: string, opts: RequestOptions = {}, signal?: AbortSignal): Promise<T> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
@@ -32,7 +33,7 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
   };
 
   // attach Authorization header unless caller opted out
-  const skipAuth = Boolean((opts as any).skipAuth);
+  const skipAuth = Boolean(opts.skipAuth);
   if (!skipAuth) {
     // try to attach existing access token
     const token = getAccessToken() || (process.env.INTEGRATION_AUTH_TOKEN as string | undefined);

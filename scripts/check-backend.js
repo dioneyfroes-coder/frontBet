@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-const fetch = globalThis.fetch || require('node-fetch');
+const fetch = globalThis.fetch;
+if (!fetch) {
+  console.error('Global fetch is not available. Run this script with Node 18+ or provide a fetch polyfill.');
+  process.exit(2);
+}
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://backbet.onrender.com';
 
@@ -13,7 +17,7 @@ async function main() {
     try {
       const json = JSON.parse(text);
       console.log('Body (json):', JSON.stringify(json, null, 2));
-    } catch (e) {
+    } catch {
       console.log('Body (text):', text);
     }
   } catch (err) {
