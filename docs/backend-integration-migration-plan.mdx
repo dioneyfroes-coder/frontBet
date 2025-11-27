@@ -1,0 +1,85 @@
+---
+title: Plano de Migração - Integração Backend
+---
+
+# Plano de Migração — Integração Frontend ⇄ Backend
+
+Este documento reúne as tarefas necessárias para integrar o frontend com o backend usando os artefatos fornecidos em `docs da backend/` (API_DOCS.mdx, ERROS.mdx, openapi.json).
+
+Use esta checklist para marcar as tarefas concluídas conforme avançamos.
+
+## Como usar
+
+- Marque as tarefas como concluídas no controle de versão (git) ao terminar.
+- A referência principal é `docs da backend/openapi.json`. Se necessário, atualizar essa especificação upstream.
+- Ferramentas sugeridas para gerar cliente: `openapi-generator`, `openapi-typescript`, `openapi-client-axios`, ou `swagger-codegen`.
+
+## Checklist de Migração
+
+- [ ] 1. Revisar documentação do backend
+  - Ler `docs da backend/API_DOCS.mdx` e `docs da backend/ERROS.mdx` para entender recursos, contratos e códigos de erro.
+  - Inspecionar `docs da backend/openapi.json` para modelos e endpoints.
+
+- [ ] 2. Gerar cliente TypeScript a partir do OpenAPI
+  - Opções:
+    - `openapi-generator-cli generate -i docs\ da\ backend/openapi.json -g typescript-fetch -o src/lib/api-client`
+    - OU `openapi-typescript ./docs\ da\ backend/openapi.json --output src/lib/api-client/types.ts`
+  - Commitar o cliente gerado ou adicionar script `npm run gen:api`.
+
+- [ ] 3. Criar camada de API (wrapper)
+  - Criar `src/lib/api.ts` que importe o cliente gerado e exponha funções leves (ex: `getGames()`, `getWallet()`, `createDeposit()`).
+  - Normalizar headers (Content-Type, Accept), tratamento de 401/403, retry e parsing de corpo.
+
+- [ ] 4. Autenticação e variáveis de ambiente
+  - Verificar fluxo de autenticação (Clerk) e como propagar token (e.g., `Authorization: Bearer <token>`).
+  - Adicionar variáveis necessárias: `NEXT_PUBLIC_API_BASE_URL`, `API_TIMEOUT_MS` e instruções no `.env.example`.
+
+- [ ] 5. Implementar endpoints críticos no frontend
+  - Mapear endpoints para features: jogos (catálogo), carteira (saldo, deposit), perfil (usuario), promoções.
+  - Implementar hooks (ex.: `useGames`, `useWallet`) que consumam `src/lib/api.ts`.
+
+- [ ] 6. Mocks e testes de integração
+  - Adicionar MSW (Mock Service Worker) e cenários para testes unitários e CI.
+  - Escrever testes de fluxo: login → fetch saldo → abrir jogo.
+
+- [ ] 7. Atualizar documentação do frontend
+  - Atualizar `docs/` (adicionar este documento) e `README.md` com passos de geração do cliente e variáveis de ambiente.
+
+- [ ] 8. Adicionar CI para verificação de contrato
+  - Criar job que valide `openapi.json` e rode `npm run test` e checks de contract (ex.: `swagger-cli validate`).
+
+- [ ] 9. Deploy em staging e smoke tests
+  - Fazer deploy em ambiente de staging e rodar smoke tests contra APIs reais.
+  - Documentar problemas e rollback plan.
+
+## Critérios de aceitação
+
+- Endpoints críticos (login, saldo, jogos) respondem com dados válidos em staging.
+- Testes unitários e de integração cobrem pelo menos os fluxos críticos.
+- Documentação atualizada com comandos para gerar cliente e variáveis de ambiente.
+
+## Comandos úteis
+
+```bash
+# gerar cliente (exemplo usando openapi-typescript)
+npx openapi-typescript "docs da backend/openapi.json" --output src/lib/api-client/types.ts
+
+# gerar cliente (openapi-generator-cli example)
+npx @openapitools/openapi-generator-cli generate -i "docs da backend/openapi.json" -g typescript-fetch -o src/lib/api-client
+
+# rodar testes
+npm run test
+
+# executar frontend em dev
+npm run dev
+```
+
+## Referências
+
+- `docs da backend/API_DOCS.mdx`
+- `docs da backend/ERROS.mdx`
+- `docs da backend/openapi.json`
+
+---
+
+_Criado automaticamente. Marque as tarefas concluídas e comunique quando quiser que eu implemente a próxima etapa (gerar cliente, criar wrapper, adicionar mocks, etc.)._
