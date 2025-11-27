@@ -22,7 +22,7 @@ export class ApiError extends Error {
   }
 }
 
-import { getAccessToken, refreshTokens } from './token';
+import { getAccessToken, refreshTokens, clearTokens } from './token';
 
 export async function apiFetch<T = unknown>(path: string, opts: RequestOptions = {}, signal?: AbortSignal): Promise<T> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
@@ -35,8 +35,8 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
   // attach Authorization header unless caller opted out
   const skipAuth = Boolean(opts.skipAuth);
   if (!skipAuth) {
-    // try to attach existing access token
-    const token = getAccessToken() || (process.env.INTEGRATION_AUTH_TOKEN as string | undefined);
+    // try to attach existing access token (might come from Clerk provider)
+    const token = (await getAccessToken()) || (process.env.INTEGRATION_AUTH_TOKEN as string | undefined);
     if (token) headers['Authorization'] = `Bearer ${token}`;
   }
 
@@ -74,6 +74,13 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
         // update header and retry once
         headers['Authorization'] = `Bearer ${refreshed}`;
         res = await fetch(url, { method: opts.method ?? 'GET', headers, body, signal: finalSignal });
+      } else {
+        // refresh failed -> clear persisted tokens to force logout client-side
+        try {
+          clearTokens();
+        } catch {
+          // ignore
+        }
       }
     }
 

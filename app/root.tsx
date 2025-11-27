@@ -9,6 +9,8 @@ import {
 import { ClerkProvider } from '@clerk/react-router';
 import { rootAuthLoader } from '@clerk/react-router/server';
 
+import ClerkTokenRegistrar from './components/clerk-token-registrar';
+
 import type { Route } from './+types/root';
 import './app.css';
 import { ThemeProvider } from './theme/theme-provider';
@@ -58,6 +60,7 @@ export const loader = (args: Route.LoaderArgs) =>
 function RootApp({ loaderData }: Route.ComponentProps) {
   return (
     <ClerkProvider loaderData={loaderData}>
+      <ClerkTokenRegistrar />
       <Outlet />
     </ClerkProvider>
   );
