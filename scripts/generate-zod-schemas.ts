@@ -13,46 +13,83 @@ function safeName(name: string) {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-function schemaToZod(name: string, schema: unknown, components: unknown, refs = new Map<string, string>): string {
+function schemaToZod(name: string, schema: unknown, components: unknown, refs = new Map<string, string>()): string {
   if (schema == null) return 'z.any()';
   const s = schema as Record<string, any>;
-  if ((s as any).$ref) {
-    const ref = String((s as any).$ref).replace('#/components/schemas/', '');
-    const refName = safeName(ref);
-    return `${refName}`;
+
+  function resolveRef(ref: string) {
+    return safeName(String(ref).replace('#/components/schemas/', ''));
   }
 
-  switch (schema.type) {
+  if ((s as any).$ref) {
+    return resolveRef((s as any).$ref);
+  }
+
+  const wrapNullable = (expr: string) => (s.nullable ? `${expr}.nullable()` : expr);
+
+  const stringWithFormat = () => {
+    const fmt = s.format;
+    if (!fmt) return 'z.string()';
+    switch (fmt) {
+      case 'uuid':
+        return 'z.string().uuid()';
+      case 'email':
+        return 'z.string().email()';
+      case 'uri':
+      case 'url':
+        return 'z.string().url()';
+      case 'date-time':
+      case 'date':
+        return 'z.string()';
+      default:
+        return 'z.string()';
+    }
+  };
+
+  switch (s.type) {
     case 'string':
-      if (schema.enum) {
-        return `z.enum([${schema.enum.map((v: string) => `"${String(v)}"`).join(', ')}] as const)`;
+      if (s.enum) {
+        return wrapNullable(`z.enum([${(s.enum as any[]).map((v) => `"${String(v)}"`).join(', ')}] as const)`);
       }
-      return 'z.string()';
+      return wrapNullable(stringWithFormat());
     case 'number':
     case 'integer':
-      return 'z.number()';
+      return wrapNullable('z.number()');
     case 'boolean':
-      return 'z.boolean()';
-    case 'array':
-      return `z.array(${schemaToZod(name + 'Item', schema.items, components, refs)})`;
+      return wrapNullable('z.boolean()');
+    case 'array': {
+      const items = schemaToZod(name + 'Item', s.items, components, refs);
+      return wrapNullable(`z.array(${items})`);
+    }
     case 'object': {
       const ss = s;
-      if (!ss.properties) return 'z.record(z.any())';
+      if (!ss.properties) {
+        if (ss.additionalProperties) {
+          const val = schemaToZod(name + 'Value', ss.additionalProperties === true ? null : ss.additionalProperties, components, refs);
+          return wrapNullable(`z.record(${val})`);
+        }
+        return wrapNullable('z.record(z.any())');
+      }
       const props = Object.entries(ss.properties as Record<string, unknown>).map(([propName, propSchema]) => {
         const required = Array.isArray(ss.required) && ss.required.includes(propName);
         const z = schemaToZod(propName, propSchema, components, refs);
         return `  ${JSON.stringify(propName)}: ${required ? z : `${z}.optional()`}`;
       });
-      return `z.object({\n${props.join(',\n')}\n})`;
+      return wrapNullable(`z.object({\n${props.join(',\n')}\n})`);
     }
-    default:
-      if ((s as any).oneOf) {
-        return `z.union([${((s as any).oneOf as any[]).map((sd) => schemaToZod(name, sd, components, refs)).join(', ')}])`;
+    default: {
+      if (Array.isArray(s.allOf)) {
+        const parts = s.allOf.map((sd: any, i: number) => schemaToZod(name + 'AllOf' + i, sd, components, refs));
+        const inter = parts.reduce((acc, p) => `z.intersection(${acc}, ${p})`);
+        return wrapNullable(inter);
       }
-      if ((s as any).anyOf) {
-        return `z.union([${((s as any).anyOf as any[]).map((sd) => schemaToZod(name, sd, components, refs)).join(', ')}])`;
+      if (Array.isArray(s.oneOf) || Array.isArray(s.anyOf)) {
+        const arr = (s.oneOf || s.anyOf) as any[];
+        const parts = arr.map((sd, i) => schemaToZod(name + 'Union' + i, sd, components, refs));
+        return wrapNullable(`z.union([${parts.join(', ')}])`);
       }
       return 'z.any()';
+    }
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -95,7 +132,7 @@ function main() {
   const out = generate(doc);
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(outFile, out, 'utf-8');
-  console.log('Wrote', outFile);
+  // generation complete
 }
 
 main();

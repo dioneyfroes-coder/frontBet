@@ -17,7 +17,7 @@ async function exportTranslations() {
     })
   );
 
-  console.log(`Exported ${entries.length} locale file(s) to ${OUTPUT_DIR}`);
+  // export complete
 }
 
 exportTranslations().catch((error) => {
