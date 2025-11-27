@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
+// Default API base points to the deployed backend. Override with `NEXT_PUBLIC_API_BASE_URL` in env for local dev.
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://backbet.onrender.com';
 
 export type RequestOptions = Omit<RequestInit, 'body'> & {
   json?: unknown;

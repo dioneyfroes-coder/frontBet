@@ -14,8 +14,12 @@ async function maybeDelay(ms: number) {
   await new Promise((r) => setTimeout(r, ms));
 }
 
+function matchPath(path: string) {
+  return ({ request }: { request: Request }) => new URL(request.url).pathname === path;
+}
+
 export const handlers = [
-  http.get('http://localhost:3000/api/wallets/me', async (info) => {
+  http.get(matchPath('/api/wallets/me'), async (info) => {
     const { delay, error } = getSimulateOptions(info as any);
     await maybeDelay(delay);
 
@@ -38,24 +42,24 @@ export const handlers = [
     return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
   }),
   // fallback for /api/games
-  http.get('http://localhost:3000/api/games', async () => {
+  http.get(matchPath('/api/games'), async () => {
     const body = JSON.stringify({ success: true, data: [{ id: 'g1', name: 'Demo Game' }] });
     return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
   }),
   // Auth: register
-  http.post('http://localhost:3000/api/auth/register', async ({ request }) => {
+  http.post(matchPath('/api/auth/register'), async ({ request }) => {
     const reqJson = await request.json().catch(() => ({}));
     const body = JSON.stringify({ success: true, data: { message: 'Registered', user: { id: 'u1', email: reqJson.email, username: reqJson.username } } });
     return new Response(body, { status: 201, headers: { 'Content-Type': 'application/json' } });
   }),
   // Auth: login
-  http.post('http://localhost:3000/api/auth/login', async ({ request }) => {
+  http.post(matchPath('/api/auth/login'), async ({ request }) => {
     const reqJson = await request.json().catch(() => ({}));
     const body = JSON.stringify({ success: true, data: { accessToken: 'tok', refreshToken: 'ref', user: { id: 'u1', email: reqJson.email } } });
     return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
   }),
   // Wallet transactions
-  http.get('http://localhost:3000/api/wallets/transactions', async (info) => {
+  http.get(matchPath('/api/wallets/transactions'), async (info) => {
     const { delay, error } = getSimulateOptions(info as any);
     await maybeDelay(delay);
     if (error === 'server') return new Response(JSON.stringify({ success: false }), { status: 500 });
@@ -63,7 +67,7 @@ export const handlers = [
     return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
   }),
   // Place a bet
-  http.post('http://localhost:3000/api/bets', async (info) => {
+  http.post(matchPath('/api/bets'), async (info) => {
     const { delay, error } = getSimulateOptions(info as any);
     await maybeDelay(delay);
     const reqJson = await info.request.json().catch(() => ({}));
@@ -75,7 +79,7 @@ export const handlers = [
     return new Response(JSON.stringify(bet), { status: 201, headers: { 'Content-Type': 'application/json' } });
   }),
   // Cancel bet
-  http.post('http://localhost:3000/api/bets/cancel', async ({ request }) => {
+  http.post(matchPath('/api/bets/cancel'), async ({ request }) => {
     const reqJson = await request.json().catch(() => ({}));
     const body = JSON.stringify({ success: true, data: { message: `Bet ${reqJson.betId} cancelled` } });
     return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
