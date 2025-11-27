@@ -57,3 +57,28 @@ npm run dev
 Contribuição
 
 Pull requests são bem-vindos. O foco atual é estabilidade, acessibilidade, consistência visual e modularidade dos componentes.
+
+Configurando variáveis de ambiente
+
+ - Copie o arquivo de exemplo: `cp .env.example .env` e atualize valores sensíveis como chaves do Clerk.
+ - A variável recomendada para configurar a URL base do backend é `NEXT_PUBLIC_API_BASE_URL`. O código mantém compatibilidade com nomes antigos, mas prefira usar essa.
+ - Timeout de requisição: `API_TIMEOUT_MS` (milissegundos, `0` = sem timeout).
+
+Ativando/desativando mocks (MSW)
+
+ - Para ativar mocks no browser (builds), defina `NEXT_PUBLIC_USE_MOCKS=true` antes de compilar/rodar o app.
+ - Para ativar mocks em ambientes Node (scripts, CI), defina `USE_MOCKS=true`.
+ - Nos testes, mocks são ativados automaticamente quando `NODE_ENV==='test'`.
+
+Exemplo rápido:
+
+```
+# use o exemplo para criar seu .env local
+cp .env.example .env
+
+# ativar mocks localmente
+export NEXT_PUBLIC_USE_MOCKS=true
+
+# rodar app
+npm run dev
+```
