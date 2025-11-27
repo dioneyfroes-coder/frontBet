@@ -86,13 +86,15 @@ export async function getAccessToken(): Promise<string | null> {
   // 2) try heuristics for Clerk when available on window
   try {
     if (isBrowser()) {
-      const w = (window as unknown) as Record<string, unknown>;
+      const w = window as unknown as Record<string, unknown>;
       const ClerkCandidate = (w['Clerk'] ?? w['clerk']) as unknown;
       if (ClerkCandidate) {
         const getTokenCandidate = (ClerkCandidate as Record<string, unknown>)['getToken'];
         if (typeof getTokenCandidate === 'function') {
           try {
-            const t = await (getTokenCandidate as (...args: unknown[]) => Promise<unknown> | unknown)();
+            const t = await (
+              getTokenCandidate as (...args: unknown[]) => Promise<unknown> | unknown
+            )();
             if (t && typeof t === 'string') return t;
           } catch {
             // ignore
@@ -104,7 +106,9 @@ export async function getAccessToken(): Promise<string | null> {
           const sessionGetToken = (sessionCandidate as Record<string, unknown>)['getToken'];
           if (typeof sessionGetToken === 'function') {
             try {
-              const t = await (sessionGetToken as (...args: unknown[]) => Promise<unknown> | unknown)();
+              const t = await (
+                sessionGetToken as (...args: unknown[]) => Promise<unknown> | unknown
+              )();
               if (t && typeof t === 'string') return t;
             } catch {
               // ignore

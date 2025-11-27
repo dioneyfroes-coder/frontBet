@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 const fetch = globalThis.fetch;
 if (!fetch) {
-  console.error('Global fetch is not available. Run this script with Node 18+ or provide a fetch polyfill.');
+  console.error(
+    'Global fetch is not available. Run this script with Node 18+ or provide a fetch polyfill.'
+  );
   process.exit(2);
 }
 

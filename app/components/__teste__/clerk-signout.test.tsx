@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { describe, it, vi, afterEach, expect } from 'vitest';
 
 import ClerkTokenRegistrar from '../clerk-token-registrar';
-import * as tokenModule from '../../lib/token';
+import * as authModule from '../../lib/auth';
 
 // Create a mock Clerk where we can trigger signOut via stored callback
 vi.mock('@clerk/react-router', () => {
@@ -30,8 +30,8 @@ describe('Clerk signOut handling', () => {
     vi.restoreAllMocks();
   });
 
-  it('calls clearTokens when Clerk emits signOut', async () => {
-    const spy = vi.spyOn(tokenModule, 'clearTokens').mockImplementation(() => {});
+  it('calls logout handler when Clerk emits signOut', async () => {
+    const spy = vi.spyOn(authModule, 'handleLogout').mockImplementation(() => Promise.resolve());
 
     // render registrar
     render(<ClerkTokenRegistrar />);

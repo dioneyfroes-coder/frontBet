@@ -20,25 +20,27 @@ type WalletState = {
   setWallet: (w: Wallet | null) => void;
 };
 
-export const useWalletStore = create<WalletState>((set: (s: Partial<WalletState> | ((s: WalletState) => Partial<WalletState>)) => void) => ({
-  wallet: undefined,
-  loading: false,
-  error: undefined,
-  setWallet: (w: Wallet | null) => set({ wallet: w }),
-  fetchWallet: async () => {
-    set({ loading: true, error: undefined });
-    try {
-      const resp = await apiFetch<{ success: boolean; data: z.infer<typeof WalletSchema> }>(
-        '/api/wallets/me',
-        { validate: z.object({ success: z.boolean(), data: WalletSchema }) }
-      );
-      const data = resp.data;
-      // runtime check
-      validateWithSchema(WalletSchema, data);
-      set({ wallet: data, loading: false });
-    } catch (err) {
-      const e = err as { message?: string } | undefined;
-      set({ error: e?.message ?? String(err), loading: false });
-    }
-  },
-}));
+export const useWalletStore = create<WalletState>(
+  (set: (s: Partial<WalletState> | ((s: WalletState) => Partial<WalletState>)) => void) => ({
+    wallet: undefined,
+    loading: false,
+    error: undefined,
+    setWallet: (w: Wallet | null) => set({ wallet: w }),
+    fetchWallet: async () => {
+      set({ loading: true, error: undefined });
+      try {
+        const resp = await apiFetch<{ success: boolean; data: z.infer<typeof WalletSchema> }>(
+          '/api/wallets/me',
+          { validate: z.object({ success: z.boolean(), data: WalletSchema }) }
+        );
+        const data = resp.data;
+        // runtime check
+        validateWithSchema(WalletSchema, data);
+        set({ wallet: data, loading: false });
+      } catch (err) {
+        const e = err as { message?: string } | undefined;
+        set({ error: e?.message ?? String(err), loading: false });
+      }
+    },
+  })
+);

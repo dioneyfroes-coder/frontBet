@@ -1,9 +1,9 @@
 import { expect, it, describe, vi } from 'vitest';
-import { server } from '../../app/mocks/server';
+import { server } from '../../mocks/server';
 import { http } from 'msw';
 
-import { apiFetch, ApiError } from '../../app/lib/api';
-import * as tokenModule from '../../app/lib/token';
+import { apiFetch, ApiError } from '../../lib/api';
+import * as tokenModule from '../../lib/token';
 
 describe('Auth refresh failure', () => {
   it('clears tokens and throws when refresh endpoint fails', async () => {
@@ -12,15 +12,25 @@ describe('Auth refresh failure', () => {
 
     // Make wallet return 401 to trigger refresh
     server.use(
-      http.get(({ request }) => new URL(request.url).pathname === '/api/wallets/me', () =>
-        new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } })
+      http.get(
+        ({ request }) => new URL(request.url).pathname === '/api/wallets/me',
+        () =>
+          new Response(JSON.stringify({ error: 'unauthorized' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' },
+          })
       )
     );
 
     // Make refresh endpoint fail
     server.use(
-      http.post(({ request }) => new URL(request.url).pathname === '/api/auth/refresh', () =>
-        new Response(JSON.stringify({ error: 'server' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+      http.post(
+        ({ request }) => new URL(request.url).pathname === '/api/auth/refresh',
+        () =>
+          new Response(JSON.stringify({ error: 'server' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          })
       )
     );
 

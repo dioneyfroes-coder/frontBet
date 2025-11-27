@@ -1,9 +1,9 @@
 import { expect, it, describe } from 'vitest';
-import { server } from '../../app/mocks/server';
+import { server } from '../../mocks/server';
 import { http } from 'msw';
 
-import { apiFetch } from '../../app/lib/api';
-import { setTokens, clearTokens } from '../../app/lib/token';
+import { apiFetch } from '../../lib/api';
+import { setTokens, clearTokens } from '../../lib/token';
 
 describe('Auth refresh flow (401 -> refresh -> retry)', () => {
   it('refreshes token on 401 and retries original request with new token', async () => {
@@ -15,21 +15,39 @@ describe('Auth refresh flow (401 -> refresh -> retry)', () => {
 
     // handler for refresh endpoint: return new tokens
     server.use(
-      http.post(({ request }) => new URL(request.url).pathname === '/api/auth/refresh', async () => {
-        const body = JSON.stringify({ success: true, data: { accessToken: 'new-token', refreshToken: 'new-refresh' } });
-        return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
-      })
+      http.post(
+        ({ request }) => new URL(request.url).pathname === '/api/auth/refresh',
+        async () => {
+          const body = JSON.stringify({
+            success: true,
+            data: { accessToken: 'new-token', refreshToken: 'new-refresh' },
+          });
+          return new Response(body, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+      )
     );
 
     // handler for wallet endpoint: require Authorization==Bearer new-token
     server.use(
-      http.get(({ request }) => new URL(request.url).pathname === '/api/wallets/me', ({ request }) => {
-        const header = request.headers.get('authorization') || '';
-        if (header !== `Bearer new-token`) {
-          return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+      http.get(
+        ({ request }) => new URL(request.url).pathname === '/api/wallets/me',
+        ({ request }) => {
+          const header = request.headers.get('authorization') || '';
+          if (header !== `Bearer new-token`) {
+            return new Response(JSON.stringify({ error: 'unauthorized' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
+          return new Response(JSON.stringify({ success: true, data: { wallet: { id: 'w1' } } }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
         }
-        return new Response(JSON.stringify({ success: true, data: { wallet: { id: 'w1' } } }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-      })
+      )
     );
 
     const res = await apiFetch('/api/wallets/me');

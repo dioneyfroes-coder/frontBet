@@ -3,13 +3,13 @@ import { beforeAll, afterAll, afterEach } from 'vitest';
 import { server } from './app/mocks/server';
 
 beforeAll(() => {
-	server.listen({ onUnhandledRequest: 'warn' });
+  server.listen({ onUnhandledRequest: 'warn' });
 });
 
 afterEach(() => {
-	server.resetHandlers();
+  server.resetHandlers();
 });
 
 afterAll(() => {
-	server.close();
+  server.close();
 });

@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
 import { useEffect } from 'react';
 import { useClerk } from '@clerk/react-router';
-import { registerAccessTokenProvider, clearTokens, setTokens } from '../lib/token';
+import { registerAccessTokenProvider, setTokens } from '../lib/token';
+import { handleLogout } from '../lib/auth';
 
 export default function ClerkTokenRegistrar() {
   const clerk = useClerk?.();
@@ -70,7 +71,8 @@ export default function ClerkTokenRegistrar() {
 
     const handler = () => {
       try {
-        clearTokens();
+        // Delegate to centralized logout handler so behavior is consistent across app
+        void handleLogout();
       } catch {
         // ignore
       }
@@ -97,10 +99,10 @@ export default function ClerkTokenRegistrar() {
         registerAccessTokenProvider(null);
         if (attached) {
           if (typeof c.removeListener === 'function') c.removeListener(handler);
-            if (typeof c.off === 'function') {
-              c.off('signOut', handler);
-              c.off('signedOut', handler);
-              c.off('sessionChanged', handler);
+          if (typeof c.off === 'function') {
+            c.off('signOut', handler);
+            c.off('signedOut', handler);
+            c.off('sessionChanged', handler);
           }
         }
       } catch {

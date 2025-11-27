@@ -22,10 +22,21 @@ export class ApiError extends Error {
   }
 }
 
-import { getAccessToken, refreshTokens, clearTokens } from './token';
+import { getAccessToken, refreshTokens } from './token';
+import { handleLogout } from './auth';
+import { handleError } from './error';
 
-export async function apiFetch<T = unknown>(path: string, opts: RequestOptions = {}, signal?: AbortSignal): Promise<T> {
+export async function apiFetch<T = unknown>(
+  path: string,
+  opts: RequestOptions = {},
+  signal?: AbortSignal
+): Promise<T> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
+
+  // TEMP LOGS: trace request lifecycle (remove after debugging)
+  console.debug(
+    `[apiFetch] start ${opts.method ?? 'GET'} ${url} skipAuth=${Boolean(opts.skipAuth)}`
+  );
 
   const headers: Record<string, string> = {
     Accept: 'application/json',
@@ -36,8 +47,12 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
   const skipAuth = Boolean(opts.skipAuth);
   if (!skipAuth) {
     // try to attach existing access token (might come from Clerk provider)
-    const token = (await getAccessToken()) || (process.env.INTEGRATION_AUTH_TOKEN as string | undefined);
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const token =
+      (await getAccessToken()) || (process.env.INTEGRATION_AUTH_TOKEN as string | undefined);
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+      console.debug(`[apiFetch] attaching token (truncated): ${String(token).slice(0, 8)}...`);
+    }
   }
 
   let body: BodyInit | undefined;
@@ -69,17 +84,26 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
 
     // If unauthorized and we didn't skip auth, try to refresh once and retry
     if (res.status === 401 && !skipAuth) {
+      console.debug(`[apiFetch] received 401 for ${url}, attempting refresh`);
       const refreshed = await refreshTokens(API_BASE);
+      console.debug(`[apiFetch] refreshTokens returned: ${refreshed ? 'ok' : 'null'}`);
       if (refreshed) {
         // update header and retry once
         headers['Authorization'] = `Bearer ${refreshed}`;
-        res = await fetch(url, { method: opts.method ?? 'GET', headers, body, signal: finalSignal });
+        console.debug(`[apiFetch] retrying ${url} with refreshed token`);
+        res = await fetch(url, {
+          method: opts.method ?? 'GET',
+          headers,
+          body,
+          signal: finalSignal,
+        });
       } else {
-        // refresh failed -> clear persisted tokens to force logout client-side
+        // refresh failed -> delegate logout handling (clear tokens + redirect) to centralized handler
         try {
-          clearTokens();
-        } catch {
-          // ignore
+          console.debug(`[apiFetch] refresh failed, calling handleLogout()`);
+          await handleLogout();
+        } catch (err) {
+          console.debug(`[apiFetch] handleLogout threw: ${String(err)}`);
         }
       }
     }
@@ -96,7 +120,13 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
           parsed = undefined;
         }
       }
-      throw new ApiError(`HTTP ${res.status}`, res.status, parsed);
+      const apiErr = new ApiError(`HTTP ${res.status}`, res.status, parsed);
+      try {
+        await handleError(apiErr);
+      } catch {
+        // ignore errors from handler
+      }
+      throw apiErr;
     }
 
     if (!text) return undefined as unknown as T;
@@ -124,12 +154,38 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
   } catch (err: unknown) {
     const e = err as { name?: string };
     if (e?.name === 'AbortError') {
-      throw new ApiError('Request timed out', 408);
+      const te = new ApiError('Request timed out', 408);
+      try {
+        await handleError(te);
+      } catch {
+        // ignore
+      }
+      throw te;
     }
     // rethrow unknown errors (preserve original when possible)
-    if (err instanceof ApiError) throw err;
-    if (err instanceof Error) throw err;
-    throw new ApiError(String(err ?? 'Unknown error'), 500);
+    if (err instanceof ApiError) {
+      try {
+        await handleError(err);
+      } catch {
+        // ignore
+      }
+      throw err;
+    }
+    if (err instanceof Error) {
+      try {
+        await handleError(err);
+      } catch {
+        // ignore
+      }
+      throw err;
+    }
+    const unknownErr = new ApiError(String(err ?? 'Unknown error'), 500);
+    try {
+      await handleError(unknownErr);
+    } catch {
+      // ignore
+    }
+    throw unknownErr;
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
   }

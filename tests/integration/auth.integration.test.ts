@@ -1,9 +1,9 @@
 import { expect, it, describe } from 'vitest';
-import { server } from '../../src/mocks/server';
+import { server } from '../../app/mocks/server';
 import { http } from 'msw';
 
-import { apiFetch, ApiError } from '../../src/lib/api';
-import { setTokens, clearTokens } from '../../src/lib/token';
+import { apiFetch, ApiError } from '../../app/lib/api';
+import { setTokens, clearTokens } from '../../app/lib/token';
 
 describe('Auth integration flow (login -> authorized request -> logout)', () => {
   it('stores token after login and sends Authorization header; clears on logout', async () => {
@@ -11,7 +11,11 @@ describe('Auth integration flow (login -> authorized request -> logout)', () => 
     clearTokens();
 
     // 1) Perform login (MSW default handler returns accessToken: 'tok')
-    const login = await apiFetch('/api/auth/login', { method: 'POST', json: { email: 'a@a.com' }, skipAuth: true });
+    const login = await apiFetch('/api/auth/login', {
+      method: 'POST',
+      json: { email: 'a@a.com' },
+      skipAuth: true,
+    });
     // login shape from MSW: { success: true, data: { accessToken, refreshToken, user } }
     // accept either shape; safely probe unknown shape
     let accessToken = 'tok';
@@ -36,13 +40,22 @@ describe('Auth integration flow (login -> authorized request -> logout)', () => 
 
     // 2) Override /api/wallets/me to assert Authorization header value
     server.use(
-      http.get(({ request }) => new URL(request.url).pathname === '/api/wallets/me', ({ request }) => {
-        const header = request.headers.get('authorization') || '';
-        if (header !== `Bearer ${accessToken}`) {
-          return new Response(JSON.stringify({ error: 'missing auth' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+      http.get(
+        ({ request }) => new URL(request.url).pathname === '/api/wallets/me',
+        ({ request }) => {
+          const header = request.headers.get('authorization') || '';
+          if (header !== `Bearer ${accessToken}`) {
+            return new Response(JSON.stringify({ error: 'missing auth' }), {
+              status: 401,
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
+          return new Response(JSON.stringify({ success: true, data: { ok: true } }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
         }
-        return new Response(JSON.stringify({ success: true, data: { ok: true } }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-      })
+      )
     );
 
     const wallet = await apiFetch('/api/wallets/me');
@@ -63,8 +76,13 @@ describe('Auth integration flow (login -> authorized request -> logout)', () => 
 
     // Override handler to ensure requests without token fail
     server.use(
-      http.get(({ request }) => new URL(request.url).pathname === '/api/wallets/me', () =>
-        new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401, headers: { 'Content-Type': 'application/json' } })
+      http.get(
+        ({ request }) => new URL(request.url).pathname === '/api/wallets/me',
+        () =>
+          new Response(JSON.stringify({ error: 'unauthorized' }), {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' },
+          })
       )
     );
 

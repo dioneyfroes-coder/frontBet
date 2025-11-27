@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { I18nProvider } from '../../app/i18n/i18n-provider';
-import { useWallet } from '../../src/hooks/useWallet';
+import { useWallet } from '../../app/hooks/useWallet';
 
 function WalletConsumer() {
   const { wallet, loading } = useWallet();

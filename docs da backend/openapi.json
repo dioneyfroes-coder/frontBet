@@ -59,11 +59,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "PENDING_VERIFICATION",
-              "ACTIVE",
-              "SUSPENDED"
-            ],
+            "enum": ["PENDING_VERIFICATION", "ACTIVE", "SUSPENDED"],
             "example": "ACTIVE"
           },
           "createdAt": {
@@ -72,13 +68,7 @@
             "example": "2025-11-14T23:20:42.778Z"
           }
         },
-        "required": [
-          "id",
-          "email",
-          "username",
-          "status",
-          "createdAt"
-        ]
+        "required": ["id", "email", "username", "status", "createdAt"]
       },
       "Wallet": {
         "type": "object",
@@ -164,13 +154,7 @@
             "example": "joaosilva"
           }
         },
-        "required": [
-          "email",
-          "password",
-          "firstName",
-          "lastName",
-          "username"
-        ]
+        "required": ["email", "password", "firstName", "lastName", "username"]
       },
       "AuthResponse": {
         "type": "object",
@@ -581,28 +565,16 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "SINGLE",
-              "MULTIPLE"
-            ],
+            "enum": ["SINGLE", "MULTIPLE"],
             "example": "SINGLE"
           },
           "currency": {
             "type": "string",
-            "enum": [
-              "BRL",
-              "USD",
-              "EUR"
-            ],
+            "enum": ["BRL", "USD", "EUR"],
             "example": "BRL"
           }
         },
-        "required": [
-          "eventId",
-          "marketId",
-          "oddId",
-          "amount"
-        ]
+        "required": ["eventId", "marketId", "oddId", "amount"]
       },
       "CancelBetRequest": {
         "type": "object",
@@ -617,9 +589,7 @@
             "example": "Erro no mercado"
           }
         },
-        "required": [
-          "betId"
-        ]
+        "required": ["betId"]
       },
       "BetResponse": {
         "type": "object",
@@ -657,12 +627,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "PENDING",
-              "WON",
-              "LOST",
-              "CANCELED"
-            ],
+            "enum": ["PENDING", "WON", "LOST", "CANCELED"],
             "example": "PENDING"
           },
           "type": {
@@ -723,9 +688,7 @@
   "paths": {
     "/api/auth/register": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Registra novo usuário e cria carteira inicial",
         "requestBody": {
           "required": true,
@@ -773,9 +736,7 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Autentica usuário (placeholder - usar Clerk OAuth em produção)",
         "requestBody": {
           "required": true,
@@ -819,9 +780,7 @@
     },
     "/api/auth/refresh": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "summary": "Renova access token usando refresh token (placeholder)",
         "requestBody": {
           "required": true,
@@ -859,9 +818,7 @@
     },
     "/api/auth/me": {
       "get": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "security": [
           {
             "bearerAuth": []
@@ -904,9 +861,7 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "security": [
           {
             "bearerAuth": []
@@ -939,9 +894,7 @@
     },
     "/api/bets/event/{eventId}": {
       "get": {
-        "tags": [
-          "Bets"
-        ],
+        "tags": ["Bets"],
         "summary": "Lista apostas de um evento",
         "parameters": [
           {
@@ -970,9 +923,7 @@
     },
     "/api/bets": {
       "post": {
-        "tags": [
-          "Bets"
-        ],
+        "tags": ["Bets"],
         "security": [
           {
             "bearerAuth": []
@@ -1008,9 +959,7 @@
     },
     "/api/bets/{betId}/cancel": {
       "post": {
-        "tags": [
-          "Bets"
-        ],
+        "tags": ["Bets"],
         "security": [
           {
             "bearerAuth": []
@@ -1057,9 +1006,7 @@
     },
     "/api/bets/me": {
       "get": {
-        "tags": [
-          "Bets"
-        ],
+        "tags": ["Bets"],
         "security": [
           {
             "bearerAuth": []
@@ -1082,9 +1029,7 @@
     },
     "/api/users/me": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "security": [
           {
             "bearerAuth": []
@@ -1125,9 +1070,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "security": [
           {
             "bearerAuth": []
@@ -1197,9 +1140,7 @@
     },
     "/api/users/me/email": {
       "patch": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "security": [
           {
             "bearerAuth": []
@@ -1223,9 +1164,7 @@
                     "description": "Código de verificação enviado por email"
                   }
                 },
-                "required": [
-                  "email"
-                ]
+                "required": ["email"]
               }
             }
           }
@@ -1276,9 +1215,7 @@
     },
     "/api/wallets/me": {
       "get": {
-        "tags": [
-          "Wallets"
-        ],
+        "tags": ["Wallets"],
         "security": [
           {
             "bearerAuth": []
@@ -1321,9 +1258,7 @@
     },
     "/api/wallets/deposit": {
       "post": {
-        "tags": [
-          "Wallets"
-        ],
+        "tags": ["Wallets"],
         "security": [
           {
             "bearerAuth": []
@@ -1344,11 +1279,7 @@
                   },
                   "currency": {
                     "type": "string",
-                    "enum": [
-                      "BRL",
-                      "USD",
-                      "EUR"
-                    ],
+                    "enum": ["BRL", "USD", "EUR"],
                     "example": "BRL"
                   },
                   "description": {
@@ -1356,10 +1287,7 @@
                     "example": "Depósito via cartão de crédito"
                   }
                 },
-                "required": [
-                  "amount",
-                  "currency"
-                ]
+                "required": ["amount", "currency"]
               }
             }
           }
@@ -1400,9 +1328,7 @@
     },
     "/api/wallets/withdraw": {
       "post": {
-        "tags": [
-          "Wallets"
-        ],
+        "tags": ["Wallets"],
         "security": [
           {
             "bearerAuth": []
@@ -1423,11 +1349,7 @@
                   },
                   "currency": {
                     "type": "string",
-                    "enum": [
-                      "BRL",
-                      "USD",
-                      "EUR"
-                    ],
+                    "enum": ["BRL", "USD", "EUR"],
                     "example": "BRL"
                   },
                   "description": {
@@ -1435,10 +1357,7 @@
                     "example": "Saque para conta bancária"
                   }
                 },
-                "required": [
-                  "amount",
-                  "currency"
-                ]
+                "required": ["amount", "currency"]
               }
             }
           }
@@ -1479,9 +1398,7 @@
     },
     "/api/wallets/history": {
       "get": {
-        "tags": [
-          "Wallets"
-        ],
+        "tags": ["Wallets"],
         "security": [
           {
             "bearerAuth": []
