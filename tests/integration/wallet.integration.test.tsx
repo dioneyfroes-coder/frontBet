@@ -1,0 +1,32 @@
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { I18nProvider } from '../../app/i18n/i18n-provider';
+import { useWallet } from '../../src/hooks/useWallet';
+
+function WalletConsumer() {
+  const { wallet, loading } = useWallet();
+  if (loading) return <div>Loading...</div>;
+  if (!wallet) return <div>No wallet</div>;
+  return (
+    <div>
+      <div data-testid="wallet-id">{wallet.id}</div>
+      <div data-testid="wallet-balance">{wallet.balance?.amount}</div>
+    </div>
+  );
+}
+
+describe('Wallet integration', () => {
+  // Global fetch mock provided in `vitest.setup.ts`, so no local fetch mock is needed
+
+  it('fetches wallet and shows balance', async () => {
+    render(
+      <I18nProvider initialLocale="pt-BR">
+        <WalletConsumer />
+      </I18nProvider>
+    );
+
+    await waitFor(() => expect(screen.getByTestId('wallet-id')).toBeInTheDocument());
+    expect(screen.getByTestId('wallet-balance').textContent).toBeTruthy();
+  });
+});
