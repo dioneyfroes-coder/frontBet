@@ -27,12 +27,14 @@ npm run dev
 
 ## Principais scripts
 
+- `npm run lint `: `eslint . --ext .ts,.tsx` para checar padrões de código;
+- `npm run typecheck`: `react-router typegen && tsc` para validar rotas + tipos;
+- `npm run test`: vitest roda testes unitários existentes (ex.: componentes da UI);
 - `npm run dev`: servidor Vite + React Router Dev para desenvolvimento com HMR;
 - `npm run build`: compila o app para produção com `react-router build`;
 - `npm run start`: executa o build com `react-router-serve` e `dotenv` injetando variáveis;
-- `npm run typecheck`: `react-router typegen && tsc` para validar rotas + tipos;
-- `npm run test`: vitest roda testes unitários existentes (ex.: componentes da UI);
-- `npm run export:i18n`: exporta traduções em `scripts/export-translations.ts`.
+
+
 
 ## Regras de contribuição
 
