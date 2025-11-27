@@ -33,11 +33,6 @@ export async function apiFetch<T = unknown>(
 ): Promise<T> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
 
-  // TEMP LOGS: trace request lifecycle (remove after debugging)
-  console.debug(
-    `[apiFetch] start ${opts.method ?? 'GET'} ${url} skipAuth=${Boolean(opts.skipAuth)}`
-  );
-
   const headers: Record<string, string> = {
     Accept: 'application/json',
     ...(opts.headers as Record<string, string> | undefined),
@@ -51,7 +46,6 @@ export async function apiFetch<T = unknown>(
       (await getAccessToken()) || (process.env.INTEGRATION_AUTH_TOKEN as string | undefined);
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
-      console.debug(`[apiFetch] attaching token (truncated): ${String(token).slice(0, 8)}...`);
     }
   }
 
@@ -84,13 +78,10 @@ export async function apiFetch<T = unknown>(
 
     // If unauthorized and we didn't skip auth, try to refresh once and retry
     if (res.status === 401 && !skipAuth) {
-      console.debug(`[apiFetch] received 401 for ${url}, attempting refresh`);
       const refreshed = await refreshTokens(API_BASE);
-      console.debug(`[apiFetch] refreshTokens returned: ${refreshed ? 'ok' : 'null'}`);
       if (refreshed) {
         // update header and retry once
         headers['Authorization'] = `Bearer ${refreshed}`;
-        console.debug(`[apiFetch] retrying ${url} with refreshed token`);
         res = await fetch(url, {
           method: opts.method ?? 'GET',
           headers,
@@ -100,10 +91,9 @@ export async function apiFetch<T = unknown>(
       } else {
         // refresh failed -> delegate logout handling (clear tokens + redirect) to centralized handler
         try {
-          console.debug(`[apiFetch] refresh failed, calling handleLogout()`);
           await handleLogout();
-        } catch (err) {
-          console.debug(`[apiFetch] handleLogout threw: ${String(err)}`);
+        } catch {
+          // ignore
         }
       }
     }
