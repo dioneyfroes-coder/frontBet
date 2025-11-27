@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
-// Default API base points to the deployed backend. Override with `NEXT_PUBLIC_API_BASE_URL` in env for local dev.
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.URL_BACKEND ?? 'https://backbet.onrender.com';
+// Default API base points to the deployed backend. Use `NEXT_PUBLIC_API_BASE_URL` in env for browser builds.
+// Keep older env names as fallback for compatibility: `PUBLIC_BACKEND_API_BASE_URL` and `URL_BACKEND`.
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.PUBLIC_BACKEND_API_BASE_URL ?? process.env.URL_BACKEND ?? 'https://backbet.onrender.com';
 // Optional request timeout (ms). If 0 or unset, no timeout is applied.
 const API_TIMEOUT_MS = Number(process.env.API_TIMEOUT_MS ?? '0');
 
@@ -35,7 +36,7 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
   }
 
   // If caller didn't provide a signal and a timeout is configured, use an AbortController to implement timeout
-  let timeoutId: any;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   let controller: AbortController | undefined;
   const finalSignal: AbortSignal | undefined = (() => {
     if (signal) return signal;
@@ -92,11 +93,15 @@ export async function apiFetch<T = unknown>(path: string, opts: RequestOptions =
     }
 
     return data as T;
-  } catch (err: any) {
-    if (err?.name === 'AbortError') {
+  } catch (err: unknown) {
+    const e = err as { name?: string };
+    if (e?.name === 'AbortError') {
       throw new ApiError('Request timed out', 408);
     }
-    throw err;
+    // rethrow unknown errors (preserve original when possible)
+    if (err instanceof ApiError) throw err;
+    if (err instanceof Error) throw err;
+    throw new ApiError(String(err ?? 'Unknown error'), 500);
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
   }
