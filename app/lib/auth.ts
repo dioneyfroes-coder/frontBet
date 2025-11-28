@@ -1,4 +1,4 @@
-import { clearTokens } from './token';
+import * as tokenModule from './token';
 
 export type LogoutHandler = () => void | Promise<void>;
 
@@ -7,7 +7,7 @@ export type LogoutHandler = () => void | Promise<void>;
 // callers (e.g. Clerk) to clear auth state without forcing a redirect.
 export function clearAuthState() {
   try {
-    clearTokens();
+    tokenModule.clearTokens();
   } catch {
     // ignore
   }

@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib';
 import type { ModalProps } from '../../types/ui';
 
 export function Modal({

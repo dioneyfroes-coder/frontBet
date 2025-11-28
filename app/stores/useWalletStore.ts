@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { z } from 'zod';
-import { apiFetch, validateWithSchema } from '../lib/api';
-import type { components } from '../lib/api-client/types';
+import { apiFetch, validateWithSchema } from '../lib';
+import type { components } from '../lib';
 
 type Wallet = components['schemas']['Wallet'];
 

@@ -1,4 +1,4 @@
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib';
 import type { ToggleProps } from '../../types/ui';
 
 export function Toggle({

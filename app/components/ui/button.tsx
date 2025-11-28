@@ -1,4 +1,4 @@
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib';
 import type { ButtonProps, ButtonSize, ButtonVariant } from '../../types/ui';
 
 const buttonVariants: Record<ButtonVariant, string> = {

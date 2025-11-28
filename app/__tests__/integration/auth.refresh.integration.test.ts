@@ -2,8 +2,7 @@ import { expect, it, describe } from 'vitest';
 import { server } from '../../mocks/server';
 import { http } from 'msw';
 
-import { apiFetch } from '../../lib/api';
-import { setTokens, clearTokens } from '../../lib/token';
+import { apiFetch, setTokens, clearTokens } from '../../lib';
 
 describe('Auth refresh flow (401 -> refresh -> retry)', () => {
   it('refreshes token on 401 and retries original request with new token', async () => {

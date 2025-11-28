@@ -2,8 +2,7 @@ import { expect, it, describe } from 'vitest';
 import { server } from '../../mocks/server';
 import { http } from 'msw';
 
-import { apiFetch, ApiError } from '../../lib/api';
-import { setTokens, clearTokens } from '../../lib/token';
+import { apiFetch, ApiError, setTokens, clearTokens } from '../../lib';
 
 describe('Auth integration flow (login -> authorized request -> logout)', () => {
   it('stores token after login and sends Authorization header; clears on logout', async () => {

@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import ClerkTokenRegistrar from '../clerk-token-registrar';
-import * as tokenModule from '../../lib/token';
+import * as tokenModule from '../../lib';
 
 // Mock Clerk hook to return an object with getToken
 vi.mock('@clerk/react-router', () => ({

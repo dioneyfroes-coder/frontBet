@@ -2,7 +2,7 @@ import { expect, it, describe, vi } from 'vitest';
 import { server } from '../../mocks/server';
 import { http } from 'msw';
 
-import { apiFetch, ApiError } from '../../lib/api';
+import { apiFetch, ApiError } from '../../lib';
 import * as tokenModule from '../../lib/token';
 
 describe('Auth refresh failure', () => {

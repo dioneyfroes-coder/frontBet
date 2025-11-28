@@ -2,8 +2,7 @@
 
 import { useEffect } from 'react';
 import { useClerk } from '@clerk/react-router';
-import { registerAccessTokenProvider, setTokens } from '../lib/token';
-import { handleLogout } from '../lib/auth';
+import { registerAccessTokenProvider, setTokens, handleLogout } from '../lib';
 
 export default function ClerkTokenRegistrar() {
   const clerk = useClerk?.();

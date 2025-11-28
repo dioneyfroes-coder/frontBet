@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiFetch } from '../lib/api';
+import { apiFetch } from '../lib';
 // import type { components } from '../lib/api-client/types';
 // import { schemas } from '../lib/schemas/generated-schemas';
 
