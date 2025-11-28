@@ -51,6 +51,9 @@ export type AccessTokenProvider = () => Promise<string | null> | string | null;
 
 let externalAccessTokenProvider: (() => Promise<string | null>) | null = null;
 
+// Serialize in-flight refresh attempts so concurrent callers reuse the same Promise
+let refreshInFlight: Promise<string | null> | null = null;
+
 export function registerAccessTokenProvider(fn: AccessTokenProvider | null) {
   if (fn == null) {
     externalAccessTokenProvider = null;
@@ -82,45 +85,21 @@ export async function getAccessToken(): Promise<string | null> {
   } catch {
     // swallow provider errors and fallback
   }
+  // Note: we intentionally avoid heuristics that inspect `window` (e.g. Clerk globals).
+  // Projects should register an `externalAccessTokenProvider` (e.g. Clerk) via
+  // `registerAccessTokenProvider()` so that tokens are provided explicitly.
+  // If no external provider is registered, fall back to persisted tokens in localStorage.
 
-  // 2) try heuristics for Clerk when available on window
+  // Show a single warning in dev when no provider is registered to help migration.
   try {
-    if (isBrowser()) {
-      const w = window as unknown as Record<string, unknown>;
-      const ClerkCandidate = (w['Clerk'] ?? w['clerk']) as unknown;
-      if (ClerkCandidate) {
-        const getTokenCandidate = (ClerkCandidate as Record<string, unknown>)['getToken'];
-        if (typeof getTokenCandidate === 'function') {
-          try {
-            const t = await (
-              getTokenCandidate as (...args: unknown[]) => Promise<unknown> | unknown
-            )();
-            if (t && typeof t === 'string') return t;
-          } catch {
-            // ignore
-          }
-        }
-
-        const sessionCandidate = (ClerkCandidate as Record<string, unknown>)['session'];
-        if (sessionCandidate) {
-          const sessionGetToken = (sessionCandidate as Record<string, unknown>)['getToken'];
-          if (typeof sessionGetToken === 'function') {
-            try {
-              const t = await (
-                sessionGetToken as (...args: unknown[]) => Promise<unknown> | unknown
-              )();
-              if (t && typeof t === 'string') return t;
-            } catch {
-              // ignore
-            }
-          }
-        }
-      }
+    if (!externalAccessTokenProvider && process.env.NODE_ENV !== 'production') {
+      console.warn(
+        '[token] no external access token provider registered; falling back to persisted tokens. Register a provider with registerAccessTokenProvider() (recommended).'
+      );
     }
   } catch {
-    // ignore
+    // ignore logging failures
   }
-
   // 3) fallback to stored tokens
   try {
     const t = loadTokens();
@@ -133,32 +112,44 @@ export async function getAccessToken(): Promise<string | null> {
 // Attempt to refresh tokens by calling backend /api/auth/refresh
 // If an external provider is registered (Clerk), try it first since Clerk manages refresh internally.
 export async function refreshTokens(apiBase: string): Promise<string | null> {
-  // If external provider exists, try to obtain a fresh token from it
-  try {
-    if (externalAccessTokenProvider) {
-      const t = await externalAccessTokenProvider();
-      if (t) return t;
-    }
-  } catch {
-    // ignore and fall back to backend refresh
-  }
+  // If a refresh is already in flight, await and reuse it
+  if (refreshInFlight) return await refreshInFlight;
 
-  const refresh = getRefreshToken();
-  if (!refresh) return null;
+  // Otherwise create a shared in-flight promise
+  refreshInFlight = (async () => {
+    // If external provider exists, try to obtain a fresh token from it first
+    try {
+      if (externalAccessTokenProvider) {
+        const t = await externalAccessTokenProvider();
+        if (t) return t;
+      }
+    } catch {
+      // ignore and fall back to backend refresh
+    }
+
+    const refresh = getRefreshToken();
+    if (!refresh) return null;
+    try {
+      const res = await fetch(`${apiBase.replace(/\/+$/, '')}/api/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ refreshToken: refresh }),
+      });
+      if (!res.ok) return null;
+      const json = await res.json().catch(() => null);
+      if (!json || !json.data) return null;
+      const accessToken = json.data.accessToken;
+      const refreshToken = json.data.refreshToken ?? refresh;
+      setTokens({ accessToken, refreshToken });
+      return accessToken ?? null;
+    } catch {
+      return null;
+    }
+  })();
+
   try {
-    const res = await fetch(`${apiBase.replace(/\/+$/, '')}/api/auth/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ refreshToken: refresh }),
-    });
-    if (!res.ok) return null;
-    const json = await res.json().catch(() => null);
-    if (!json || !json.data) return null;
-    const accessToken = json.data.accessToken;
-    const refreshToken = json.data.refreshToken ?? refresh;
-    setTokens({ accessToken, refreshToken });
-    return accessToken ?? null;
-  } catch {
-    return null;
+    return await refreshInFlight;
+  } finally {
+    refreshInFlight = null;
   }
 }

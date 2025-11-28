@@ -3,12 +3,17 @@ import { clearTokens } from './token';
 export type LogoutHandler = () => void | Promise<void>;
 
 // Default logout handler: clear persisted tokens and redirect to `/login` in browsers
-let handler: LogoutHandler = async () => {
+// Default behavior split into two functions for better testability and to allow
+// callers (e.g. Clerk) to clear auth state without forcing a redirect.
+export function clearAuthState() {
   try {
     clearTokens();
   } catch {
     // ignore
   }
+}
+
+export function redirectToLogin() {
   try {
     if (typeof window !== 'undefined' && typeof window.location !== 'undefined') {
       window.location.replace('/login');
@@ -16,6 +21,11 @@ let handler: LogoutHandler = async () => {
   } catch {
     // ignore non-browser environments
   }
+}
+
+let handler: LogoutHandler = async () => {
+  clearAuthState();
+  redirectToLogin();
 };
 
 // Prevent repeated logout/redirect loops by tracking whether a logout is already in progress.
@@ -25,18 +35,8 @@ export function setLogoutHandler(h: LogoutHandler | null) {
   if (h == null) {
     // reset to default
     handler = async () => {
-      try {
-        clearTokens();
-      } catch {
-        // ignore
-      }
-      try {
-        if (typeof window !== 'undefined' && typeof window.location !== 'undefined') {
-          window.location.replace('/login');
-        }
-      } catch {
-        // ignore
-      }
+      clearAuthState();
+      redirectToLogin();
     };
   } else {
     handler = h;
