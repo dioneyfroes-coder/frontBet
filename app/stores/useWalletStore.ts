@@ -1,16 +1,9 @@
 import { create } from 'zustand';
+import { getMyWallet } from '../lib/api/clients/wallet';
+import { WalletResponse } from '../lib';
 import { z } from 'zod';
-import { apiFetch, validateWithSchema } from '../lib';
-import type { components } from '../lib';
 
-type Wallet = components['schemas']['Wallet'];
-
-const WalletSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  balance: z.object({ amount: z.number(), currency: z.string() }),
-  createdAt: z.string(),
-});
+type Wallet = z.infer<typeof WalletResponse>['data'];
 
 type WalletState = {
   wallet?: Wallet | null;
@@ -29,14 +22,8 @@ export const useWalletStore = create<WalletState>(
     fetchWallet: async () => {
       set({ loading: true, error: undefined });
       try {
-        const resp = await apiFetch<{ success: boolean; data: z.infer<typeof WalletSchema> }>(
-          '/api/wallets/me',
-          { validate: z.object({ success: z.boolean(), data: WalletSchema }) }
-        );
-        const data = resp.data;
-        // runtime check
-        validateWithSchema(WalletSchema, data);
-        set({ wallet: data, loading: false });
+        const wallet = await getMyWallet();
+        set({ wallet, loading: false });
       } catch (err) {
         const e = err as { message?: string } | undefined;
         set({ error: e?.message ?? String(err), loading: false });

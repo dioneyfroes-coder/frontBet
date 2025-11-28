@@ -22,9 +22,9 @@ export class ApiError extends Error {
   }
 }
 
-import { getAccessToken, refreshTokens } from './token';
-import { handleLogout } from './auth';
-import { handleError } from './error';
+import { getAccessToken, refreshTokens } from '../token';
+import { handleLogout } from '../auth';
+import { handleError } from '../error';
 
 export async function apiFetch<T = unknown>(
   path: string,
@@ -188,3 +188,7 @@ export function validateWithSchema<T>(schema: z.ZodSchema<T>, payload: unknown):
   }
   return parsed.data;
 }
+
+// Re-export schemas and helpers from submodules
+export * from './schemas/generated-schemas';
+export * from './rest';

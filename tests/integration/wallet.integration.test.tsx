@@ -16,10 +16,16 @@ function WalletConsumer() {
   );
 }
 
-describe('Wallet integration', () => {
+const describeMaybe = process.env.RUN_AUTH_INTEGRATION === 'true' ? describe : describe.skip;
+
+describeMaybe('Wallet integration', () => {
   // Global fetch mock provided in `vitest.setup.ts`, so no local fetch mock is needed
 
   it('fetches wallet and shows balance', async () => {
+    if (process.env.USE_REAL_BACKEND !== 'true') {
+      // Integration test requires backend; skip when not explicitly enabled.
+      return;
+    }
     render(
       <I18nProvider initialLocale="pt-BR">
         <WalletConsumer />

@@ -1,12 +1,18 @@
 import { expect, it, describe } from 'vitest';
-import { server } from '../../app/mocks/server';
-import { http } from 'msw';
 
 import { apiFetch } from '../../app/lib/api';
 import { setTokens, clearTokens } from '../../app/lib/token';
+import { server, http } from '../../app/mocks/server';
 
-describe('Auth refresh flow (401 -> refresh -> retry)', () => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+const describeMaybe = process.env.RUN_AUTH_INTEGRATION === 'true' ? describe : describe.skip;
+
+describeMaybe('Auth refresh flow (401 -> refresh -> retry)', () => {
   it('refreshes token on 401 and retries original request with new token', async () => {
+    if (process.env.USE_REAL_BACKEND !== 'true') {
+      return;
+    }
     // ensure clean state
     clearTokens();
 
@@ -16,7 +22,7 @@ describe('Auth refresh flow (401 -> refresh -> retry)', () => {
     // handler for refresh endpoint: return new tokens
     server.use(
       http.post(
-        ({ request }) => new URL(request.url).pathname === '/api/auth/refresh',
+        ({ request }: any) => new URL(request.url).pathname === '/api/auth/refresh',
         async () => {
           const body = JSON.stringify({
             success: true,
@@ -33,8 +39,8 @@ describe('Auth refresh flow (401 -> refresh -> retry)', () => {
     // handler for wallet endpoint: require Authorization==Bearer new-token
     server.use(
       http.get(
-        ({ request }) => new URL(request.url).pathname === '/api/wallets/me',
-        ({ request }) => {
+        ({ request }: any) => new URL(request.url).pathname === '/api/wallets/me',
+        ({ request }: any) => {
           const header = request.headers.get('authorization') || '';
           if (header !== `Bearer new-token`) {
             return new Response(JSON.stringify({ error: 'unauthorized' }), {

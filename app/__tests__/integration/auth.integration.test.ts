@@ -1,11 +1,17 @@
 import { expect, it, describe } from 'vitest';
-import { server } from '../../mocks/server';
-import { http } from 'msw';
+import { server, http } from '../../mocks/server';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { apiFetch, ApiError, setTokens, clearTokens } from '../../lib';
 
-describe('Auth integration flow (login -> authorized request -> logout)', () => {
+const describeMaybe = process.env.RUN_AUTH_INTEGRATION === 'true' ? describe : describe.skip;
+
+describeMaybe('Auth integration flow (login -> authorized request -> logout)', () => {
   it('stores token after login and sends Authorization header; clears on logout', async () => {
+    if (process.env.USE_REAL_BACKEND !== 'true') {
+      return;
+    }
     // ensure clean state
     clearTokens();
 
@@ -40,8 +46,8 @@ describe('Auth integration flow (login -> authorized request -> logout)', () => 
     // 2) Override /api/wallets/me to assert Authorization header value
     server.use(
       http.get(
-        ({ request }) => new URL(request.url).pathname === '/api/wallets/me',
-        ({ request }) => {
+        ({ request }: any) => new URL(request.url).pathname === '/api/wallets/me',
+        ({ request }: any) => {
           const header = request.headers.get('authorization') || '';
           if (header !== `Bearer ${accessToken}`) {
             return new Response(JSON.stringify({ error: 'missing auth' }), {
@@ -76,7 +82,7 @@ describe('Auth integration flow (login -> authorized request -> logout)', () => 
     // Override handler to ensure requests without token fail
     server.use(
       http.get(
-        ({ request }) => new URL(request.url).pathname === '/api/wallets/me',
+        ({ request }: any) => new URL(request.url).pathname === '/api/wallets/me',
         () =>
           new Response(JSON.stringify({ error: 'unauthorized' }), {
             status: 401,

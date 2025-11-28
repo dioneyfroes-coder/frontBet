@@ -199,6 +199,57 @@ export const BetListResponse = z.object({
   bets: z.array(BetResponse).optional(),
 });
 
+export const Market = z.object({
+  id: z.string().uuid().optional(),
+  eventId: z.string().uuid().optional(),
+  name: z.string().optional(),
+  outcomes: z.array(z.string()).optional(),
+});
+
+export const MarketListResponse = z.object({
+  markets: z.array(Market).optional(),
+});
+
+export const Odd = z.object({
+  id: z.string().uuid().optional(),
+  marketId: z.string().uuid().optional(),
+  price: z.number().optional(),
+  label: z.string().optional(),
+});
+
+export const OddsResponse = z.object({
+  odds: z.array(Odd).optional(),
+});
+
+export const ReportRequest = z.object({
+  type: z.string(),
+  params: z.record(z.string(), z.any()).optional(),
+});
+
+export const ReportResponse = z.object({
+  id: z.string().uuid().optional(),
+  status: z.enum(['PENDING', 'READY', 'FAILED'] as const).optional(),
+  url: z.string().optional(),
+});
+
+export const AdminStatus = z.object({
+  uptime: z.number().optional(),
+  version: z.string().optional(),
+});
+
+export const AuditEntry = z.object({
+  id: z.string().uuid().optional(),
+  action: z.string().optional(),
+  userId: z.string().uuid().optional(),
+  meta: z.record(z.string(), z.any()).optional(),
+  createdAt: z.string().optional(),
+});
+
+export const AuditListResponse = z.object({
+  entries: z.array(AuditEntry).optional(),
+  total: z.number().optional(),
+});
+
 export const schemas = {
   User,
   Wallet,
@@ -219,4 +270,13 @@ export const schemas = {
   CancelBetRequest,
   BetResponse,
   BetListResponse,
+  Market,
+  MarketListResponse,
+  Odd,
+  OddsResponse,
+  ReportRequest,
+  ReportResponse,
+  AdminStatus,
+  AuditEntry,
+  AuditListResponse,
 } as const;

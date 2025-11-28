@@ -68,25 +68,67 @@ export default function ClerkTokenRegistrar() {
       session?: unknown;
     };
 
-    const handler = () => {
+    // We prefer to only trigger a full logout/redirect for explicit sign-out events.
+    // For session changes we only clear persisted tokens to avoid redirect loops while Clerk
+    // rehydrates or rotates tokens during normal operation.
+    const signOutHandler = () => {
       try {
-        // Delegate to centralized logout handler so behavior is consistent across app
         void handleLogout();
       } catch {
         // ignore
       }
     };
 
+    const sessionChangedHandler = () => {
+      try {
+        // Clear persisted tokens but do not force a redirect; Clerk will manage client session.
+        // This avoids a brief redirect to `/login` when Clerk is still initializing.
+        try {
+          setTokens({ accessToken: null, refreshToken: null });
+        } catch {
+          // ignore
+        }
+      } catch {
+        // ignore
+      }
+    };
+
     let attached = false;
+    let wrapper: ((ev?: unknown) => void) | null = null;
     try {
-      if (typeof c.addListener === 'function') {
-        c.addListener(handler);
+      if (typeof c.on === 'function') {
+        // attach to specific events for clearer intent
+        c.on('signOut', signOutHandler);
+        c.on('signedOut', signOutHandler);
+        c.on('sessionChanged', sessionChangedHandler);
         attached = true;
-      } else if (typeof c.on === 'function') {
-        // attach to a few common event names
-        c.on('signOut', handler);
-        c.on('signedOut', handler);
-        c.on('sessionChanged', handler);
+      } else if (typeof c.addListener === 'function') {
+        // `addListener` may emit a variety of events; attach a defensive wrapper that
+        // only triggers a full logout when the event indicates an explicit sign-out.
+        wrapper = (ev?: unknown) => {
+          try {
+            // When `addListener` is used and no event payload is provided, treat it
+            // as an explicit sign-out (preserves previous behavior where addListener
+            // invoked the logout handler directly).
+            if (!ev) return signOutHandler();
+            // if event appears to be a string name, handle common names
+            if (typeof ev === 'string') {
+              if (ev === 'signOut' || ev === 'signedOut') return signOutHandler();
+              return sessionChangedHandler();
+            }
+            // If event has a `type` property, use it to decide
+            if (typeof ev === 'object' && ev !== null && 'type' in (ev as Record<string, unknown>)) {
+              const t = ((ev as Record<string, unknown>).type as unknown) as string;
+              if (t === 'signOut' || t === 'signedOut') return signOutHandler();
+              return sessionChangedHandler();
+            }
+            // default fallback
+            return sessionChangedHandler();
+          } catch {
+            // ignore
+          }
+        };
+        c.addListener(wrapper);
         attached = true;
       }
     } catch {
@@ -97,11 +139,23 @@ export default function ClerkTokenRegistrar() {
       try {
         registerAccessTokenProvider(null);
         if (attached) {
-          if (typeof c.removeListener === 'function') c.removeListener(handler);
+          if (typeof c.removeListener === 'function' && wrapper) c.removeListener(wrapper);
           if (typeof c.off === 'function') {
-            c.off('signOut', handler);
-            c.off('signedOut', handler);
-            c.off('sessionChanged', handler);
+            try {
+              c.off('signOut', signOutHandler);
+            } catch {
+              /* ignore */
+            }
+            try {
+              c.off('signedOut', signOutHandler);
+            } catch {
+              /* ignore */
+            }
+            try {
+              c.off('sessionChanged', sessionChangedHandler);
+            } catch {
+              /* ignore */
+            }
           }
         }
       } catch {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiFetch } from '../lib';
+import { getGames } from '../lib/api/clients/games';
 // import type { components } from '../lib/api-client/types';
 // import { schemas } from '../lib/schemas/generated-schemas';
 
@@ -13,12 +13,10 @@ export function useGames() {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    apiFetch('/api/games')
-      .then((res) => {
+    getGames()
+      .then((games) => {
         if (!mounted) return;
-        // if the generator created a GamesResponse schema, we could validate here
-        const maybe = res as unknown as { data?: unknown };
-        setData((maybe.data as unknown[] | null) ?? null);
+        setData(games);
       })
       .catch((err) => {
         if (!mounted) return;
