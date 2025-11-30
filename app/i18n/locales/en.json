@@ -47,60 +47,22 @@
     "secondaryCta": "Sign in",
     "highlightsTitle": "Live highlights",
     "highlightsSubtitle": "Combined odd",
-    "highlightsMatches": [
-      {
-        "confrontation": "Inter Miami vs LAFC",
-        "odd": "1.92"
-      },
-      {
-        "confrontation": "Arsenal vs Newcastle",
-        "odd": "2.60"
-      },
-      {
-        "confrontation": "River Plate vs Boca",
-        "odd": "2.30"
-      }
-    ],
+    "highlightsMatches": [],
     "statsCards": [
       {
-        "label": "Available balance",
-        "value": "R$ 2,450.15",
-        "trend": "+12% vs last week"
+        "label": "Available balance"
       },
       {
-        "label": "Top module",
-        "value": "Live Match Monitor",
-        "trend": "66 sessions / 24h"
+        "label": "Top module"
       },
       {
-        "label": "Active promos",
-        "value": "Double boost BR",
-        "trend": "Expires in 6h"
+        "label": "Active promos"
       }
     ],
     "activity": {
       "title": "Recent activity",
       "subtitle": "Synced with wallets and the games hub.",
-      "items": [
-        {
-          "id": "act-1",
-          "time": "5m ago",
-          "action": "PIX deposit confirmed",
-          "detail": "R$ 500.00"
-        },
-        {
-          "id": "act-2",
-          "time": "18m ago",
-          "action": "Signal triggered",
-          "detail": "Odds Heatmap flagged Bahia"
-        },
-        {
-          "id": "act-3",
-          "time": "45m ago",
-          "action": "Cashout ticket",
-          "detail": "Profit of R$ 120.00"
-        }
-      ]
+      "items": []
     },
     "recommendations": {
       "title": "Smart recommendations",
@@ -108,32 +70,7 @@
       "openCta": "Open"
     }
   },
-  "gamesHub": {
-    "meta": {
-      "title": "FrontBet - Experience catalog",
-      "description": "Browse sportsbook, casino and forex modules curated for professional trading desks."
-    },
-    "heroTag": "Smart catalog",
-    "heroTitle": "Pick how you want to play",
-    "heroDescription": "Sportsbook, live casino and forex modules curated in one cockpit.",
-    "filters": {
-      "all": "All",
-      "sports": "Sportsbook",
-      "casino": "Casino",
-      "forex": "Forex",
-      "searchPlaceholder": "Search by name, feature or sport",
-      "resultTemplate": "{count} experience(s)",
-      "emptyState": "No experience matches this filter. Try another query."
-    },
-    "comingSoon": "Coming soon",
-    "sections": [
-      {
-        "id": "sports",
-        "eyebrow": "Sports betting",
-        "title": "Tactical modules for pre-game and live",
-        "description": "Purpose-built telemetry for scouting and trading desks.",
-        "experiences": [
-          {
+    "entries": []
             "id": "live-monitor",
             "icon": "📡",
             "name": "Live Match Monitor",
@@ -260,32 +197,7 @@
       "status": "Status",
       "recordedAt": "Recorded at"
     },
-    "entries": [
-      {
-        "id": "AUD-9823",
-        "action": "PIX withdrawal",
-        "amount": "R$ 300.00",
-        "status": "Approved",
-        "timestamp": "Nov 23, 2025 18:17",
-        "agent": "System"
-      },
-      {
-        "id": "AUD-9812",
-        "action": "PIX deposit",
-        "amount": "R$ 500.00",
-        "status": "Completed",
-        "timestamp": "Nov 24, 2025 22:08",
-        "agent": "User"
-      },
-      {
-        "id": "AUD-9755",
-        "action": "Daily limit adjustment",
-        "amount": "R$ 1,500.00",
-        "status": "Review",
-        "timestamp": "Nov 21, 2025 14:53",
-        "agent": "Analyst"
-      }
-    ]
+    "entries": []
   },
   "wallet": {
     "meta": {

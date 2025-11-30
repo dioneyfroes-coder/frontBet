@@ -18,7 +18,9 @@ export async function login(payload: { email: string; password: string }) {
 }
 
 export async function register(payload: zodInferRegisterRequest) {
-  const res = await post<RegisterResp>('/api/auth/register', payload, { validate: RegisterResponse });
+  const res = await post<RegisterResp>('/api/auth/register', payload, {
+    validate: RegisterResponse,
+  });
   return res.data;
 }
 

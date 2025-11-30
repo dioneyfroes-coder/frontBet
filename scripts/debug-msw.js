@@ -8,7 +8,9 @@
   // Simple debug script that calls the real backend wallet endpoint.
   // Run with `USE_REAL_BACKEND=true` to avoid confusion.
   if (process.env.USE_REAL_BACKEND !== 'true') {
-    console.log('Skipping debug fetch. Set USE_REAL_BACKEND=true to run this script against the real backend.');
+    console.log(
+      'Skipping debug fetch. Set USE_REAL_BACKEND=true to run this script against the real backend.'
+    );
     return;
   }
 

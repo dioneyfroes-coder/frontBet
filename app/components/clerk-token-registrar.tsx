@@ -117,8 +117,12 @@ export default function ClerkTokenRegistrar() {
               return sessionChangedHandler();
             }
             // If event has a `type` property, use it to decide
-            if (typeof ev === 'object' && ev !== null && 'type' in (ev as Record<string, unknown>)) {
-              const t = ((ev as Record<string, unknown>).type as unknown) as string;
+            if (
+              typeof ev === 'object' &&
+              ev !== null &&
+              'type' in (ev as Record<string, unknown>)
+            ) {
+              const t = (ev as Record<string, unknown>).type as unknown as string;
               if (t === 'signOut' || t === 'signedOut') return signOutHandler();
               return sessionChangedHandler();
             }

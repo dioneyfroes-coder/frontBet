@@ -62,18 +62,6 @@ describeMaybe('Auth integration flow (login -> authorized request -> logout)', (
     // 3) Simulate logout: clear tokens
     clearTokens();
 
-    // Override handler to ensure requests without token fail
-    server.use(
-      http.get(
-        ({ request }: any) => new URL(request.url).pathname === '/api/wallets/me',
-        () =>
-          new Response(JSON.stringify({ error: 'unauthorized' }), {
-            status: 401,
-            headers: { 'Content-Type': 'application/json' },
-          })
-      )
-    );
-
     // Expect apiFetch to throw ApiError with status 401 (and not refresh)
     let threw = false;
     try {

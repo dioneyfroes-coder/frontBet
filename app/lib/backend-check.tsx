@@ -12,7 +12,10 @@ export type BackendCheckOptions = {
   debugShowTestToast?: boolean; // show a test toast on mount (debug)
 };
 
-export async function checkBackend(endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`, _timeoutMs = 5000) {
+export async function checkBackend(
+  endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`,
+  _timeoutMs = 5000
+) {
   // Use central `apiFetch` so all calls go through the API layer (headers, refresh, error handling).
   // `apiFetch` will throw on non-2xx; return true on success.
   await apiFetch(endpoint, { method: 'GET', skipAuth: true });
@@ -44,7 +47,9 @@ export default function BackendHealthNotifier({
 
     try {
       if (typeof console !== 'undefined' && typeof console.debug === 'function') {
-        console.debug(`[backend-check] initialized (endpoint=${endpoint}, intervalMs=${String(intervalMs)})`);
+        console.debug(
+          `[backend-check] initialized (endpoint=${endpoint}, intervalMs=${String(intervalMs)})`
+        );
       }
     } catch (e) {
       void e;

@@ -5,7 +5,9 @@ import { z } from 'zod';
 type UserResp = z.infer<typeof User>;
 
 export async function getUser(id: string) {
-  const res = await get<{ success?: boolean; data?: unknown }>(`/api/users/${encodeURIComponent(id)}`);
+  const res = await get<{ success?: boolean; data?: unknown }>(
+    `/api/users/${encodeURIComponent(id)}`
+  );
   const maybe = res as unknown as { data?: unknown };
   // try to validate with User schema if present
   try {

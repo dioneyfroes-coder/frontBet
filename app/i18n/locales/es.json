@@ -47,60 +47,16 @@
     "secondaryCta": "Ingresar",
     "highlightsTitle": "Partidos destacados",
     "highlightsSubtitle": "Cuota combinada",
-    "highlightsMatches": [
-      {
-        "confrontation": "Barcelona vs Girona",
-        "odd": "1.98"
-      },
-      {
-        "confrontation": "América vs Cruz Azul",
-        "odd": "2.40"
-      },
-      {
-        "confrontation": "Colón vs Unión",
-        "odd": "2.65"
-      }
-    ],
+    "highlightsMatches": [],
     "statsCards": [
-      {
-        "label": "Saldo disponível",
-        "value": "R$ 2.450,15",
-        "trend": "+12% vs semana"
-      },
-      {
-        "label": "Módulo favorito",
-        "value": "Live Match Monitor",
-        "trend": "66 sesiones / 24h"
-      },
-      {
-        "label": "Promos activas",
-        "value": "Doble boost",
-        "trend": "Expira en 6h"
-      }
+      { "label": "Saldo disponível" },
+      { "label": "Módulo favorito" },
+      { "label": "Promos activas" }
     ],
     "activity": {
       "title": "Últimas acciones",
       "subtitle": "Sincronizado con billeteras y hub de juegos.",
-      "items": [
-        {
-          "id": "act-1",
-          "time": "hace 5 min",
-          "action": "Depósito PIX confirmado",
-          "detail": "R$ 500,00"
-        },
-        {
-          "id": "act-2",
-          "time": "hace 18 min",
-          "action": "Señal emitida",
-          "detail": "Odds Heatmap alertó Bahía"
-        },
-        {
-          "id": "act-3",
-          "time": "hace 45 min",
-          "action": "Cashout del ticket",
-          "detail": "Ganancia de R$ 120,00"
-        }
-      ]
+      "items": []
     },
     "recommendations": {
       "title": "Recomendaciones automáticas",
@@ -268,32 +224,7 @@
       "status": "Estado",
       "recordedAt": "Registro"
     },
-    "entries": [
-      {
-        "id": "AUD-9823",
-        "action": "Retiro PIX",
-        "amount": "R$ 300,00",
-        "status": "Aprobado",
-        "timestamp": "23/11/2025 18:17",
-        "agent": "Sistema"
-      },
-      {
-        "id": "AUD-9812",
-        "action": "Depósito PIX",
-        "amount": "R$ 500,00",
-        "status": "Completado",
-        "timestamp": "24/11/2025 22:08",
-        "agent": "Usuario"
-      },
-      {
-        "id": "AUD-9755",
-        "action": "Límite diário ajustado",
-        "amount": "R$ 1.500,00",
-        "status": "En revisión",
-        "timestamp": "21/11/2025 14:53",
-        "agent": "Analista"
-      }
-    ]
+    "entries": []
   },
   "wallet": {
     "meta": {

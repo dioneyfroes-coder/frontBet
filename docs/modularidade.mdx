@@ -5,7 +5,7 @@ handleLogout() faz redirect via window.location.replace('/login') → side-effec
 apiFetch mistura responsabilidades (fetch + retry + zod validation + chamada de handleError) — ok, mas precisa de limites explícitos.
 Logs e debugging foram temporariamente incluídos (removidos já).
 Falta de serialização de refresh: múltiplas requisições que recebem 401 podem disparar várias tentativas de refresh simultâneas (causou comportamento de redirect/reload observado).
-Arquivos gerados (.react-router/*) disparavam watcher → já mitigado em vite.config.ts.
+Arquivos gerados (.react-router/\*) disparavam watcher → já mitigado em vite.config.ts.
 Uso de localStorage direto em token.ts — bom para cliente, mas dificulta testes em algumas situações; já existe guard isBrowser().
 Recomendações concretas (ordenadas por impacto)
 

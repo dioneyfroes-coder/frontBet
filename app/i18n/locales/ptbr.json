@@ -84,39 +84,16 @@
     "secondaryCta": "Entrar",
     "highlightsTitle": "Destaques ao vivo",
     "highlightsSubtitle": "Odds combinada",
-    "highlightsMatches": [
-      { "confrontation": "Internacional vs River", "odd": "1.92" },
-      { "confrontation": "Flamengo vs Palmeiras", "odd": "2.60" },
-      { "confrontation": "Santos vs Grêmio", "odd": "2.30" }
-    ],
+    "highlightsMatches": [],
     "statsCards": [
-      { "label": "Saldo disponível", "value": "R$ 2.450,15", "trend": "+12% vs semana" },
-      { "label": "Módulo principal", "value": "Live Match Monitor", "trend": "66 sessões / 24h" },
-      { "label": "Promos ativas", "value": "Double boost BR", "trend": "Expira em 6h" }
+      { "label": "Saldo disponível" },
+      { "label": "Módulo principal" },
+      { "label": "Promos ativas" }
     ],
     "activity": {
       "title": "Atividade recente",
       "subtitle": "Sincronizado com carteiras e hub de jogos.",
-      "items": [
-        {
-          "id": "act-1",
-          "time": "há 5 min",
-          "action": "Depósito PIX confirmado",
-          "detail": "R$ 500,00"
-        },
-        {
-          "id": "act-2",
-          "time": "há 18 min",
-          "action": "Sinal disparado",
-          "detail": "Odds Heatmap alertou Bahia"
-        },
-        {
-          "id": "act-3",
-          "time": "há 45 min",
-          "action": "Ticket cashout",
-          "detail": "Lucro de R$ 120,00"
-        }
-      ]
+      "items": []
     },
     "recommendations": {
       "title": "Recomendações inteligentes",

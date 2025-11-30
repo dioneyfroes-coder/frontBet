@@ -81,39 +81,16 @@
     "secondaryCta": "Entrar",
     "highlightsTitle": "Destaques ao vivo",
     "highlightsSubtitle": "Odds combinada",
-    "highlightsMatches": [
-      { "confrontation": "Petro de Luanda vs Mamelodi", "odd": "1.92" },
-      { "confrontation": "CD Costa do Sol vs Black Bulls", "odd": "2.60" },
-      { "confrontation": "1º de Agosto vs CD Primeiro de Maio", "odd": "2.30" }
-    ],
+    "highlightsMatches": [],
     "statsCards": [
-      { "label": "Saldo disponível", "value": "R$ 2.450,15", "trend": "+12% vs semana" },
-      { "label": "Módulo principal", "value": "Live Match Monitor", "trend": "66 sessões / 24h" },
-      { "label": "Promos ativas", "value": "Double boost MZ", "trend": "Expira em 6h" }
+      { "label": "Saldo disponível" },
+      { "label": "Módulo principal" },
+      { "label": "Promos ativas" }
     ],
     "activity": {
       "title": "Atividade recente",
       "subtitle": "Sincronizado com carteiras e hub de jogos.",
-      "items": [
-        {
-          "id": "act-1",
-          "time": "há 5 min",
-          "action": "Depósito PIX confirmado",
-          "detail": "MT 5.000,00"
-        },
-        {
-          "id": "act-2",
-          "time": "há 18 min",
-          "action": "Sinal disparado",
-          "detail": "Odds Heatmap alertou 1º de Agosto"
-        },
-        {
-          "id": "act-3",
-          "time": "há 45 min",
-          "action": "Ticket cashout",
-          "detail": "Lucro de MT 240,00"
-        }
-      ]
+      "items": []
     },
     "recommendations": {
       "title": "Recomendações inteligentes",
