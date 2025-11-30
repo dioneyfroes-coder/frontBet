@@ -38,11 +38,25 @@ export default function BackendHealthNotifier({
   showOnce = true,
   timeoutMs = 5000,
   enabled = true,
+  // for debugging: show a test toast on mount so developers can verify toasts
+  debugShowTestToast = false,
 }: BackendCheckOptions) {
   const { show } = useToast();
   const shownRef = useRef(false);
   useEffect(() => {
     if (!enabled) return undefined;
+
+    try {
+      console.debug && console.debug(`[backend-check] initialized (endpoint=${endpoint}, intervalMs=${String(intervalMs)})`);
+    } catch {
+      // ignore
+    }
+
+    if (debugShowTestToast) {
+      try {
+        show('Backend check initialized (debug)', 'info');
+      } catch {}
+    }
 
     let mounted = true;
 
@@ -63,6 +77,12 @@ export default function BackendHealthNotifier({
           }
         }
       } catch (err) {
+        // Log failure to console to help debugging when no toast appears
+        try {
+          console.debug && console.debug(`[backend-check] check failed: ${endpoint}`, err);
+        } catch {
+          // ignore
+        }
         // Swallow errors here — this module only notifies on success.
       }
     };
