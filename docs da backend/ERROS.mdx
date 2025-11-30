@@ -1,7 +1,7 @@
 ---
-title: 'Códigos de Erro da API'
-description: 'Referência dos códigos e formato de erros (AppError) da BackBet.'
-slug: '/docs/erros'
+title: "Códigos de Erro da API"
+description: "Referência dos códigos e formato de erros (AppError) da BackBet."
+slug: "/docs/erros"
 ---
 
 # ERROS (AppError) — BackBet
@@ -35,17 +35,17 @@ O BackBet utiliza a classe `AppError` para padronizar respostas de falha em toda
 
 ## Catálogo de códigos
 
-| Código                  | HTTP | Quando usar                                                  | Detalhes recomendados                     |
-| ----------------------- | ---- | ------------------------------------------------------------ | ----------------------------------------- |
-| `VALIDATION_ERROR`      | 400  | Falha em schemas Zod ou invariantes                          | mapa campo → mensagem, `rule` opcional    |
-| `BAD_REQUEST`           | 400  | Regras de negócio quebradas (ex.: estado inválido)           | `reason`, `expectedState`, `currentState` |
-| `UNAUTHORIZED`          | 401  | Token ausente, inválido ou dev bypass desativado             | `authMode`, `hint` mínimo                 |
-| `FORBIDDEN`             | 403  | Papel não permite a ação                                     | `requiredPermission`, `userRole`          |
-| `NOT_FOUND`             | 404  | Qualquer recurso inexistente                                 | `resource`, `identifier`                  |
-| `CONFLICT`              | 409  | Duplica chave ou condição otimista quebrada                  | `resource`, `field`, `value`              |
-| `RATE_LIMIT_EXCEEDED`   | 429  | Limite de IP/usuário atingido                                | `retryAfter` em segundos                  |
-| `SERVICE_UNAVAILABLE`   | 503  | Dependência externa fora do ar (Clerk, Redis)                | `dependency`, `retryAfter`                |
-| `INTERNAL_SERVER_ERROR` | 500  | Erro inesperado; log completo somente no observability stack | `requestId` apenas                        |
+| Código | HTTP | Quando usar | Detalhes recomendados |
+| --- | --- | --- | --- |
+| `VALIDATION_ERROR` | 400 | Falha em schemas Zod ou invariantes | mapa campo → mensagem, `rule` opcional |
+| `BAD_REQUEST` | 400 | Regras de negócio quebradas (ex.: estado inválido) | `reason`, `expectedState`, `currentState` |
+| `UNAUTHORIZED` | 401 | Token ausente, inválido ou dev bypass desativado | `authMode`, `hint` mínimo |
+| `FORBIDDEN` | 403 | Papel não permite a ação | `requiredPermission`, `userRole` |
+| `NOT_FOUND` | 404 | Qualquer recurso inexistente | `resource`, `identifier` |
+| `CONFLICT` | 409 | Duplica chave ou condição otimista quebrada | `resource`, `field`, `value` |
+| `RATE_LIMIT_EXCEEDED` | 429 | Limite de IP/usuário atingido | `retryAfter` em segundos |
+| `SERVICE_UNAVAILABLE` | 503 | Dependência externa fora do ar (Clerk, Redis) | `dependency`, `retryAfter` |
+| `INTERNAL_SERVER_ERROR` | 500 | Erro inesperado; log completo somente no observability stack | `requestId` apenas |
 
 > Sempre use códigos específicos antes de cair no fallback `INTERNAL_SERVER_ERROR`.
 

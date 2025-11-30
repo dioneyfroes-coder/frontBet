@@ -20,5 +20,6 @@ export * from './auth';
 export * from './error';
 export * from './cn';
 export * from './api-client/types';
+export { default as BackendHealthNotifier, checkBackend } from './backend-check';
 
 // Usage: `import { apiFetch, get, WalletResponse } from 'app/lib'`.

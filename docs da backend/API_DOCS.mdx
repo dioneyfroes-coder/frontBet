@@ -1,7 +1,7 @@
 ---
-title: 'API Docs'
-description: 'Guia único dos endpoints públicos do BackBet (auth, usuários, carteiras, finanças e apostas).'
-slug: '/docs/api'
+title: "API Docs"
+description: "Guia único dos endpoints públicos do BackBet (auth, usuários, carteiras, finanças e apostas)."
+slug: "/docs/api"
 ---
 
 # BackBet API
@@ -10,9 +10,9 @@ slug: '/docs/api'
 
 ## Base URLs
 
-| Ambiente           | URL base                      | Docs interativos                   |
-| ------------------ | ----------------------------- | ---------------------------------- |
-| Desenvolvimento    | `http://localhost:3000/api`   | `http://localhost:3000/api/docs`   |
+| Ambiente | URL base | Docs interativos |
+|----------|----------|------------------|
+| Desenvolvimento | `http://localhost:3000/api` | `http://localhost:3000/api/docs` |
 | Produção (exemplo) | `https://api.backbet.com/api` | `https://api.backbet.com/api/docs` |
 
 > A especificação completa está disponível em `/api/docs.json` (OpenAPI 3.1) e usa os mesmos `servers` com prefixo `/api`. Todos os exemplos usam versão v1.
@@ -34,12 +34,7 @@ Todos os controllers herdam `BaseController`, produzindo envelopes consistentes:
 ```json
 {
   "success": true,
-  "data": {
-    "message": "...",
-    "payload": {
-      /* ... */
-    }
-  },
+  "data": { "message": "...", "payload": { /* ... */ } },
   "meta": { "timestamp": "2025-11-23T15:00:00.000Z", "requestId": "req-..." }
 }
 ```
@@ -58,41 +53,41 @@ Erros seguem:
 }
 ```
 
-| Código                             | HTTP | Ocorrência (exemplos)                                           |
-| ---------------------------------- | ---- | --------------------------------------------------------------- |
-| `VALIDATION_ERROR` / `BAD_REQUEST` | 400  | Falha em DTOs Zod (`RegisterDTO`, `DepositDTO`, etc.).          |
-| `UNAUTHORIZED`                     | 401  | Token ausente/expirado.                                         |
-| `NOT_FOUND`                        | 404  | Usuário, carteira ou aposta inexistente.                        |
-| `CONFLICT`                         | 409  | Email duplicado, mudança de email inválida, carteira já criada. |
-| `RATE_LIMIT_EXCEEDED`              | 429  | Limite global ou específico atingido.                           |
-| `INTERNAL_SERVER_ERROR`            | 500  | Erro inesperado não tratado.                                    |
+| Código | HTTP | Ocorrência (exemplos) |
+|--------|------|-----------------------|
+| `VALIDATION_ERROR` / `BAD_REQUEST` | 400 | Falha em DTOs Zod (`RegisterDTO`, `DepositDTO`, etc.). |
+| `UNAUTHORIZED` | 401 | Token ausente/expirado. |
+| `NOT_FOUND` | 404 | Usuário, carteira ou aposta inexistente. |
+| `CONFLICT` | 409 | Email duplicado, mudança de email inválida, carteira já criada. |
+| `RATE_LIMIT_EXCEEDED` | 429 | Limite global ou específico atingido. |
+| `INTERNAL_SERVER_ERROR` | 500 | Erro inesperado não tratado. |
 
 ## Rate limiting
 
 - **Global:** `express-rate-limit` (defaults `windowMs=600000`, `max=5000`). Configure com `RATE_LIMIT_{WINDOW_MS,MAX,MESSAGE,ENABLED}`.
 - **Por rota:** `createRouteRateLimiter` injeta limites para endpoints críticos.
 
-| Rota                       | Variáveis                      | Padrão                 |
-| -------------------------- | ------------------------------ | ---------------------- |
-| `POST /auth/register`      | `AUTH_REGISTER_RATE_LIMIT_*`   | `window=60s`, `max=10` |
-| `POST /auth/login`         | `AUTH_LOGIN_RATE_LIMIT_*`      | `window=60s`, `max=15` |
-| `POST /auth/refresh`       | `AUTH_REFRESH_RATE_LIMIT_*`    | `window=60s`, `max=30` |
-| `POST /wallets/deposit`    | `WALLET_DEPOSIT_RATE_LIMIT_*`  | `window=60s`, `max=20` |
-| `POST /wallets/withdraw`   | `WALLET_WITHDRAW_RATE_LIMIT_*` | `window=60s`, `max=10` |
-| `POST /bets`               | `BET_PLACE_RATE_LIMIT_*`       | `window=60s`, `max=30` |
-| `POST /bets/:betId/cancel` | `BET_CANCEL_RATE_LIMIT_*`      | `window=60s`, `max=10` |
+| Rota | Variáveis | Padrão |
+|------|-----------|--------|
+| `POST /auth/register` | `AUTH_REGISTER_RATE_LIMIT_*` | `window=60s`, `max=10` |
+| `POST /auth/login` | `AUTH_LOGIN_RATE_LIMIT_*` | `window=60s`, `max=15` |
+| `POST /auth/refresh` | `AUTH_REFRESH_RATE_LIMIT_*` | `window=60s`, `max=30` |
+| `POST /wallets/deposit` | `WALLET_DEPOSIT_RATE_LIMIT_*` | `window=60s`, `max=20` |
+| `POST /wallets/withdraw` | `WALLET_WITHDRAW_RATE_LIMIT_*` | `window=60s`, `max=10` |
+| `POST /bets` | `BET_PLACE_RATE_LIMIT_*` | `window=60s`, `max=30` |
+| `POST /bets/:betId/cancel` | `BET_CANCEL_RATE_LIMIT_*` | `window=60s`, `max=10` |
 
 Headers retornados (`RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`) seguem o padrão IETF.
 
 ## Observabilidade rápida
 
-| Endpoint            | Função                                                                                                                 | Proteção                    |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------- |
-| `GET /health`       | Heartbeat (status/uptime).                                                                                             | Público                     |
-| `GET /readiness`    | Ping em Redis/Mongo e atualiza `dependencyHealthSnapshot`.                                                             | Público (proteja via proxy) |
-| `GET /health/cache` | Snapshot de `redisClient.getMetrics()`.                                                                                | Público                     |
-| `GET /metrics`      | Endpoint desativado (410) por padrão — habilite `OBS_ENABLE_PROMETHEUS=true` para reativar o payload do `prom-client`. | Público                     |
-| `GET /api/docs`     | Swagger UI.                                                                                                            | Público                     |
+| Endpoint | Função | Proteção |
+|----------|--------|----------|
+| `GET /health` | Heartbeat (status/uptime). | Público |
+| `GET /readiness` | Ping em Redis/Mongo e atualiza `dependencyHealthSnapshot`. | Público (proteja via proxy) |
+| `GET /health/cache` | Snapshot de `redisClient.getMetrics()`. | Público |
+| `GET /metrics` | Endpoint desativado (410) por padrão — habilite `OBS_ENABLE_PROMETHEUS=true` para reativar o payload do `prom-client`. | Público |
+| `GET /api/docs` | Swagger UI. | Público |
 
 Detalhes completos em `docs/OBSERVABILITY.mdx`.
 
@@ -100,13 +95,13 @@ Detalhes completos em `docs/OBSERVABILITY.mdx`.
 
 ### Auth (`/api/auth`)
 
-| Método | Caminho          | Descrição                                                                      |
-| ------ | ---------------- | ------------------------------------------------------------------------------ |
-| `POST` | `/auth/register` | Cria usuário + carteira (BRL). Sincroniza com Clerk quando habilitado.         |
-| `POST` | `/auth/login`    | Valida credenciais locais, emite `accessToken`/`refreshToken`, retorna perfil. |
-| `POST` | `/auth/refresh`  | Recebe `refreshToken` e devolve novo par de tokens.                            |
-| `GET`  | `/auth/me`       | Perfil autenticado (dados do domínio + Clerk).                                 |
-| `POST` | `/auth/logout`   | Placeholder; retorna mensagem de sucesso.                                      |
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| `POST` | `/auth/register` | Cria usuário + carteira (BRL). Sincroniza com Clerk quando habilitado. |
+| `POST` | `/auth/login` | Valida credenciais locais, emite `accessToken`/`refreshToken`, retorna perfil. |
+| `POST` | `/auth/refresh` | Recebe `refreshToken` e devolve novo par de tokens. |
+| `GET` | `/auth/me` | Perfil autenticado (dados do domínio + Clerk). |
+| `POST` | `/auth/logout` | Placeholder; retorna mensagem de sucesso. |
 
 **Registro (201)**
 
@@ -140,39 +135,39 @@ Content-Type: application/json
 
 Todas protegidas por bearer token + cache opcional (`cacheUserProfileMiddleware`).
 
-| Método  | Caminho           | Notas                                                                         |
-| ------- | ----------------- | ----------------------------------------------------------------------------- |
-| `GET`   | `/users/me`       | Retorna perfil completo; servido do Redis quando `CACHE_ENABLED=true`.        |
-| `PATCH` | `/users/me`       | Atualiza `firstName/lastName` (o backend recalcula `username` e `updatedAt`). |
-| `PATCH` | `/users/me/email` | Troca email após validar unicidade e VO `Email`. Limpa cache de perfil.       |
+| Método | Caminho | Notas |
+|--------|---------|-------|
+| `GET` | `/users/me` | Retorna perfil completo; servido do Redis quando `CACHE_ENABLED=true`. |
+| `PATCH` | `/users/me` | Atualiza `firstName/lastName` (o backend recalcula `username` e `updatedAt`). |
+| `PATCH` | `/users/me/email` | Troca email após validar unicidade e VO `Email`. Limpa cache de perfil. |
 
 ### Carteiras (`/api/wallets`)
 
-| Método | Caminho                         | Proteções / Cache                                 | Descrição                                                             |
-| ------ | ------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------- |
-| `GET`  | `/wallets/me`                   | `protectedRoute` + `cacheWalletBalanceMiddleware` | Carteira atual `{ userId, balance, lockedBalance, currency }`.        |
-| `GET`  | `/wallets/history?limit&offset` | `protectedRoute` + `cacheWalletHistoryMiddleware` | Histórico paginado (`transactions`, `pagination`).                    |
-| `POST` | `/wallets/deposit`              | `protectedRoute` + rate limit `wallet-deposit`    | Body `{ amount, currency, description? }`. Responde 201 com carteira. |
-| `POST` | `/wallets/withdraw`             | `protectedRoute` + rate limit `wallet-withdraw`   | Mesma estrutura do depósito; valida saldo e bloqueios.                |
+| Método | Caminho | Proteções / Cache | Descrição |
+|--------|---------|-------------------|-----------|
+| `GET` | `/wallets/me` | `protectedRoute` + `cacheWalletBalanceMiddleware` | Carteira atual `{ userId, balance, lockedBalance, currency }`. |
+| `GET` | `/wallets/history?limit&offset` | `protectedRoute` + `cacheWalletHistoryMiddleware` | Histórico paginado (`transactions`, `pagination`). |
+| `POST` | `/wallets/deposit` | `protectedRoute` + rate limit `wallet-deposit` | Body `{ amount, currency, description? }`. Responde 201 com carteira. |
+| `POST` | `/wallets/withdraw` | `protectedRoute` + rate limit `wallet-withdraw` | Mesma estrutura do depósito; valida saldo e bloqueios. |
 
 ### Finanças (`/api/finance`)
 
-| Método  | Caminho                                   | Descrição                                                                                         |
-| ------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `GET`   | `/finance/packages`                       | Lista pacotes ativos (`CreditPackageResponseDTO`).                                                |
-| `POST`  | `/finance/packages/:packageId/purchase`   | Compra pacote, credita `base+bonus` e retorna `{ wallet, creditPackage }`.                        |
-| `POST`  | `/finance/withdrawal-requests`            | Cria solicitação `{ amount, currency, notes? }` e trava o saldo (`wallet.lock`).                  |
-| `GET`   | `/finance/withdrawal-requests`            | Lista pedidos do usuário com `approvalLogs`.                                                      |
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| `GET` | `/finance/packages` | Lista pacotes ativos (`CreditPackageResponseDTO`). |
+| `POST` | `/finance/packages/:packageId/purchase` | Compra pacote, credita `base+bonus` e retorna `{ wallet, creditPackage }`. |
+| `POST` | `/finance/withdrawal-requests` | Cria solicitação `{ amount, currency, notes? }` e trava o saldo (`wallet.lock`). |
+| `GET` | `/finance/withdrawal-requests` | Lista pedidos do usuário com `approvalLogs`. |
 | `PATCH` | `/finance/withdrawal-requests/:requestId` | Admin flow: `{ action: "APPROVED"&#124;"REJECTED", notes? }`. Atualiza `withdrawLocked`/`unlock`. |
 
 ### Apostas (`/api/bets`)
 
-| Método | Caminho                | Auth                             | Descrição                                                                                                                            |
-| ------ | ---------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `GET`  | `/bets/event/:eventId` | opcional                         | Lista apostas e odds do evento (cache em `cacheEventOddsMiddleware`).                                                                |
-| `GET`  | `/bets/me`             | Bearer                           | Retorna apostas do usuário.                                                                                                          |
-| `POST` | `/bets`                | Bearer + rate limit `bet-place`  | Body `PlaceBetRequest` (`eventId`, `marketId`, `oddId`, `amount`, `type`). Debita via `WalletService.withdraw` e cria bet `PENDING`. |
-| `POST` | `/bets/:betId/cancel`  | Bearer + rate limit `bet-cancel` | Cancela aposta pendente, devolve valores (`wallet.deposit`).                                                                         |
+| Método | Caminho | Auth | Descrição |
+|--------|---------|------|-----------|
+| `GET` | `/bets/event/:eventId` | opcional | Lista apostas e odds do evento (cache em `cacheEventOddsMiddleware`). |
+| `GET` | `/bets/me` | Bearer | Retorna apostas do usuário. |
+| `POST` | `/bets` | Bearer + rate limit `bet-place` | Body `PlaceBetRequest` (`eventId`, `marketId`, `oddId`, `amount`, `type`). Debita via `WalletService.withdraw` e cria bet `PENDING`. |
+| `POST` | `/bets/:betId/cancel` | Bearer + rate limit `bet-cancel` | Cancela aposta pendente, devolve valores (`wallet.deposit`). |
 
 `Bet` responses incluem `status`, `potentialReturn`, `odds`, `createdAt`, `updatedAt` e detalhes do evento/mercado associados.
 
@@ -202,7 +197,7 @@ curl -i http://localhost:3000/metrics
 ## Configurações relevantes
 
 - **Cache:** `CACHE_ENABLED`, `REDIS_URL`, `CACHE_USER_BALANCE_TTL_SECONDS`, `CACHE_WALLET_HISTORY_TTL_SECONDS`, `CACHE_ODDS_TTL_SECONDS`.
-- **Persistência Mongo:** `USE_MONGOOSE_PERSISTENCE`, `MONGO_URL` (afetando `/readiness` e os repositórios).
+- **Persistência Mongo:** `USE_MONGOOSE_PERSISTENCE`, `MONGO_URL` (afetando `/readiness` e os repositórios). 
 - **Tracing:** `TRACING_ENABLED`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`, `OTEL_DIAGNOSTIC_LOG_LEVEL`.
 - **Rate limiting:** `RATE_LIMIT_*`, `AUTH_*_RATE_LIMIT_*`, `WALLET_*_RATE_LIMIT_*`, `BET_*_RATE_LIMIT_*`.
 
@@ -211,3 +206,4 @@ Proteja `/health`, `/readiness` e `/health/cache` via firewall ou reverse proxy 
 ---
 
 **Última atualização:** 23 de novembro de 2025
+

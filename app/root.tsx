@@ -12,6 +12,7 @@ import { rootAuthLoader } from '@clerk/react-router/server';
 
 import ClerkTokenRegistrar from './components/clerk-token-registrar';
 import ToastProvider, { useToast } from './components/ToastProvider';
+import { BackendHealthNotifier } from './lib';
 import { setErrorHandler } from './lib/error';
 import { setLogoutHandler } from './lib/auth';
 
@@ -67,6 +68,7 @@ function RootApp({ loaderData }: Route.ComponentProps) {
       <ToastProvider>
         <ErrorHandlerRegistrar />
         <ClerkTokenRegistrar />
+        <BackendHealthNotifier endpoint="/api/health" intervalMs={60000} enabled={process.env.NODE_ENV !== 'production'} />
         <Outlet />
       </ToastProvider>
     </ClerkProvider>
