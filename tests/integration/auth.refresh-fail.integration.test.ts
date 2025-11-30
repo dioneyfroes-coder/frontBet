@@ -3,8 +3,6 @@ import { expect, it, describe, vi } from 'vitest';
 import { apiFetch, ApiError } from '../../app/lib/api';
 import * as tokenModule from '../../app/lib/token';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const describeMaybe = process.env.RUN_AUTH_INTEGRATION === 'true' ? describe : describe.skip;
 
 describeMaybe('Auth refresh failure', () => {

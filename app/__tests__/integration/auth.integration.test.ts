@@ -1,7 +1,5 @@
 import { expect, it, describe } from 'vitest';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { apiFetch, ApiError, setTokens, clearTokens } from '../../lib';
 
 const describeMaybe = process.env.RUN_AUTH_INTEGRATION === 'true' ? describe : describe.skip;

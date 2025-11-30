@@ -34,46 +34,9 @@ const hourFormatter = new Intl.DateTimeFormat('pt-BR', {
 const formatBRL = (value: number) => currencyFormatter.format(value);
 const formatHour = (value: string) => hourFormatter.format(new Date(value));
 
-const initialTransactions: Transaction[] = [
-  {
-    id: 'TX-9041',
-    type: 'deposit',
-    reference: 'Depósito confirmado via PIX',
-    amount: 520.5,
-    status: 'confirmado',
-    timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-    channel: 'PIX',
-  },
-  {
-    id: 'TX-9038',
-    type: 'withdraw',
-    reference: 'Saque PIX - Banco Inter',
-    amount: 350,
-    status: 'processando',
-    timestamp: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-    channel: 'Web',
-  },
-  {
-    id: 'TX-9031',
-    type: 'bonus',
-    reference: 'Cashback loja de jogos',
-    amount: 80,
-    status: 'confirmado',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-    channel: 'Automação',
-  },
-  {
-    id: 'TX-9024',
-    type: 'deposit',
-    reference: 'Depósito programado',
-    amount: 230,
-    status: 'confirmado',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    channel: 'PIX',
-  },
-];
+// initial transactions removed — data comes from backend
 
-const liveChannels: LiveChannel[] = ['PIX', 'Web', 'Automação'];
+// known channels (kept for labels)
 const historyFilters: Array<'todos' | TransactionType> = ['todos', 'deposit', 'withdraw', 'bonus'];
 const channelOrder = ['PIX', 'Web', 'Automação'] as const;
 
@@ -83,25 +46,6 @@ const createPixCode = () => {
   }
   return Math.random().toString(36).slice(2, 10).toUpperCase();
 };
-
-function createSimulatedTransaction(): Transaction {
-  const type: TransactionType = Math.random() > 0.65 ? 'withdraw' : 'deposit';
-  const amount = Number((Math.random() * (type === 'withdraw' ? 400 : 600) + 50).toFixed(2));
-  return {
-    id: `TX-${Math.floor(1000 + Math.random() * 9000)}`,
-    type,
-    reference:
-      type === 'withdraw'
-        ? 'Saque solicitado via Web'
-        : Math.random() > 0.5
-          ? 'Depósito confirmado via PIX'
-          : 'Depósito escalonado automático',
-    amount,
-    status: type === 'withdraw' ? 'processando' : 'confirmado',
-    timestamp: new Date().toISOString(),
-    channel: liveChannels[Math.floor(Math.random() * liveChannels.length)],
-  };
-}
 
 export function meta({}: Route.MetaArgs) {
   const meta = getPageMeta('wallet');
@@ -122,8 +66,8 @@ export default function Carteira() {
   const channelLabels = walletCopy.channels;
   const errorsCopy = walletCopy.errors;
 
-  const [balance, setBalance] = useState(2450.15);
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
+  const [balance, setBalance] = useState<number>(0);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [lastUpdate, setLastUpdate] = useState<Date>(() => new Date());
   const [connectionState, setConnectionState] = useState<'online' | 'sincronizando'>('online');
   const [nowTick, setNowTick] = useState(() => Date.now());
@@ -145,24 +89,52 @@ export default function Carteira() {
   const deferredHistorySearch = useDeferredValue(historySearch);
   const [isFilteringHistory, startHistoryTransition] = useTransition();
 
+  // fetch wallet + transactions from backend
   useEffect(() => {
-    let syncTimeout: number | null = null;
-    const interval = window.setInterval(() => {
-      setConnectionState('sincronizando');
-      setTransactions((current) => {
-        const next = createSimulatedTransaction();
-        setBalance((value) => value + (next.type === 'withdraw' ? -next.amount : next.amount));
-        setLastUpdate(new Date());
-        return [next, ...current].slice(0, 15);
-      });
-      syncTimeout = window.setTimeout(() => setConnectionState('online'), 1200);
-    }, 12000);
+    let mounted = true;
+    (async () => {
+      try {
+        setConnectionState('sincronizando');
+        const [{ getMyWallet }, { getTransactions }] = await Promise.all([
+          // dynamic imports keep bundle size small in test env
+          import('../lib/api/clients/wallet'),
+          import('../lib/api/clients/transactions'),
+        ]);
 
-    return () => {
-      clearInterval(interval);
-      if (syncTimeout) {
-        clearTimeout(syncTimeout);
+        const wallet = await getMyWallet();
+        if (!mounted) return;
+        if (wallet && wallet.balance && typeof wallet.balance.amount === 'number') {
+          // assume backend returns amount in cents
+          setBalance(wallet.balance.amount / 100);
+        }
+
+        const txRes = await getTransactions({ limit: 15 });
+        if (!mounted) return;
+        const txTyped = txRes as { transactions?: unknown[]; total?: number };
+        const remoteTx = Array.isArray(txTyped.transactions) ? txTyped.transactions : [];
+        const mapped: Transaction[] = remoteTx.map((t: unknown) => {
+          const rec = (t as Record<string, unknown>) ?? {};
+          const id = rec.id ? String(rec.id) : `tx-${Math.random().toString(36).slice(2, 8)}`;
+          const type = String(rec.type ?? 'deposit') as Transaction['type'];
+          const reference = String(rec.description ?? rec.reference ?? '');
+          const amountNum = typeof rec.amount === 'number' ? rec.amount : 0;
+          const amount = Number((amountNum / 100).toFixed(2));
+          const status = (String(rec.status ?? 'confirmado') as Transaction['status']) ?? 'confirmado';
+          const timestamp = String(rec.createdAt ?? rec.timestamp ?? new Date().toISOString());
+          const channel = (String(rec.channel ?? 'Web') as LiveChannel) ?? 'Web';
+          return { id, type, reference, amount, status, timestamp, channel };
+        });
+        setTransactions(mapped.slice(0, 15));
+        setLastUpdate(new Date());
+        setConnectionState('online');
+      } catch {
+        // keep UI usable with empty state when backend fails
+        // don't log verbose debug info here to avoid noisy console output
+        setConnectionState('online');
       }
+    })();
+    return () => {
+      mounted = false;
     };
   }, []);
 

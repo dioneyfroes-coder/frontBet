@@ -3,8 +3,6 @@ import { expect, it, describe } from 'vitest';
 import { apiFetch } from '../../app/lib/api';
 import { setTokens, clearTokens } from '../../app/lib/token';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const describeMaybe = process.env.RUN_AUTH_INTEGRATION === 'true' ? describe : describe.skip;
 
 describeMaybe('Auth refresh flow (401 -> refresh -> retry)', () => {

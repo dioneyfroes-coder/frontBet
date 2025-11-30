@@ -1,0 +1,3 @@
+testEmail=your_email+clerk_test@example.com
+TestCodeVerification=424242
+TestPhoneNumber=+15555550100

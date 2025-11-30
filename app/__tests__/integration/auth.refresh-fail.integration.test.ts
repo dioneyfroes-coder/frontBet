@@ -1,7 +1,5 @@
 import { expect, it, describe, vi } from 'vitest';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { apiFetch, ApiError } from '../../lib';
 import * as tokenModule from '../../lib/token';
 

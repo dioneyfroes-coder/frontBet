@@ -12,12 +12,10 @@ export type BackendCheckOptions = {
   debugShowTestToast?: boolean; // show a test toast on mount (debug)
 };
 
-export async function checkBackend(
-  endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`,
-  _timeoutMs = 5000
-) {
+export async function checkBackend(endpoint = '/health', _timeoutMs = 5000) {
   // Use central `apiFetch` so all calls go through the API layer (headers, refresh, error handling).
-  // `apiFetch` will throw on non-2xx; return true on success.
+  // `apiFetch` will prepend the configured `NEXT_PUBLIC_API_BASE_URL` so callers should
+  // provide relative paths (e.g. `/health`) to avoid embedding environment URLs in code.
   await apiFetch(endpoint, { method: 'GET', skipAuth: true });
   return true;
 }
@@ -31,7 +29,7 @@ export async function checkBackend(
  * any top-level layout).
  */
 export default function BackendHealthNotifier({
-  endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`,
+  endpoint = '/health',
   intervalMs = null,
   toastMessage = 'Conexão com backend estabelecida',
   showOnce = true,
@@ -45,15 +43,7 @@ export default function BackendHealthNotifier({
   useEffect(() => {
     if (!enabled) return undefined;
 
-    try {
-      if (typeof console !== 'undefined' && typeof console.debug === 'function') {
-        console.debug(
-          `[backend-check] initialized (endpoint=${endpoint}, intervalMs=${String(intervalMs)})`
-        );
-      }
-    } catch (e) {
-      void e;
-    }
+    // initialization is silent by default to avoid noisy logs in production/dev
 
     if (debugShowTestToast) {
       try {
@@ -69,27 +59,13 @@ export default function BackendHealthNotifier({
       try {
         await checkBackend(endpoint, timeoutMs);
         if (!mounted) return;
-        // debug log so developers can see the successful check in console
-        try {
-          if (typeof console !== 'undefined' && typeof console.debug === 'function') {
-            console.debug(`[backend-check] backend reachable: ${endpoint}`);
-          }
-        } catch (e) {
-          void e;
-        }
+        // successful check: show toast but avoid noisy console debug output
         if (!showOnce || !shownRef.current) {
           shownRef.current = true;
           show(toastMessage, 'info');
         }
       } catch (err) {
-        // Log failure to console to help debugging when no toast appears
-        try {
-          if (typeof console !== 'undefined' && typeof console.debug === 'function') {
-            console.debug(`[backend-check] check failed: ${endpoint}`, err);
-          }
-        } catch (e) {
-          void e;
-        }
+        // swallow failures silently; the notifier only reports successful checks
         // Swallow errors here — this module only notifies on success.
       }
     };

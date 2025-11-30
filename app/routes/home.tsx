@@ -8,7 +8,7 @@ import { Button } from '../components/ui/button';
 import { gameRegistry } from '../data/game-registry';
 import { useI18n } from '../i18n/i18n-provider';
 import { getPageMeta } from '../i18n/page-copy';
-import { apiFetch } from '../lib/api/index';
+import { getHomeContent } from '../lib/api/clients/home';
 
 interface Highlight {
   confrontation?: string;
@@ -43,16 +43,14 @@ export default function Home() {
     let mounted = true;
     (async () => {
       try {
-        // backend endpoint expected to return home content overrides. `skipAuth` so public.
-        const res = await apiFetch('/api/home', { method: 'GET', skipAuth: true });
+        // Use central API client so pages don't embed backend paths.
+        const res = await getHomeContent();
         if (!mounted) return;
         if (res && typeof res === 'object') {
           setRemoteCopy(res as Partial<typeof homeCopy>);
         }
       } catch {
         // fail silently for now
-      } finally {
-        // nothing
       }
     })();
     return () => {

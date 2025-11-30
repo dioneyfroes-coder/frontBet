@@ -20,6 +20,6 @@ describe('formatMessage', () => {
   });
 
   it('returns empty string for undefined template', () => {
-    expect(formatMessage(undefined as any, {})).toBe('');
+    expect(formatMessage(undefined, {})).toBe('');
   });
 });

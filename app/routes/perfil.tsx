@@ -10,7 +10,7 @@ import { Toggle } from '../components/ui/toggle';
 import { requireAuth } from '../utils/auth.server';
 import { useI18n } from '../i18n/i18n-provider';
 import { formatMessage } from '../lib/config';
-import { apiFetch } from '../lib/api/index';
+import { me as getMyProfile } from '../lib/api/clients/auth';
 
 interface StatItem {
   label?: string;
@@ -70,7 +70,8 @@ export default function Perfil() {
     let mounted = true;
     (async () => {
       try {
-        const res = await apiFetch('/api/users/me');
+        // Use central auth client to obtain current user info.
+        const res = await getMyProfile();
         if (!mounted || !res) return;
         setRemoteProfile(res as Record<string, unknown>);
         // seed client form values if available
