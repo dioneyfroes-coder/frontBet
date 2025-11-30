@@ -241,14 +241,14 @@ export default function Carteira() {
       event.preventDefault();
       startPixTransition(() => {
         const amount = parseAmount(depositAmount);
-        if (Number.isNaN(amount) || amount < 10) {
+        if (Number.isNaN(amount) || amount < cfg.MIN_DEPOSIT / 100) {
           setDepositError(
             formatMessage(errorsCopy.depositMin, { minDeposit: formatMoney(cfg.MIN_DEPOSIT) })
           );
           setPixRequest(null);
           return;
         }
-        if (amount > 15000) {
+        if (amount > cfg.MAX_DEPOSIT / 100) {
           setDepositError(
             formatMessage(errorsCopy.depositMax, { maxDeposit: formatMoney(cfg.MAX_DEPOSIT) })
           );
@@ -287,7 +287,7 @@ export default function Carteira() {
       event.preventDefault();
       startWithdrawTransition(() => {
         const amount = parseAmount(withdrawAmount);
-        if (Number.isNaN(amount) || amount < 20) {
+        if (Number.isNaN(amount) || amount < cfg.MIN_WITHDRAWAL / 100) {
           setWithdrawNote({
             status: 'error',
             message: formatMessage(errorsCopy.withdrawMin, {
