@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useToast } from '../components/ToastProvider';
+import { apiFetch } from './api/index';
 
 export type BackendCheckOptions = {
   endpoint?: string; // relative path to ping, default '/api/health'
@@ -11,17 +12,11 @@ export type BackendCheckOptions = {
   debugShowTestToast?: boolean; // show a test toast on mount (debug)
 };
 
-export async function checkBackend(endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`, timeoutMs = 5000) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(endpoint, { signal: controller.signal, cache: 'no-store' });
-    clearTimeout(id);
-    return res;
-  } catch (err) {
-    clearTimeout(id);
-    throw err;
-  }
+export async function checkBackend(endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`, _timeoutMs = 5000) {
+  // Use central `apiFetch` so all calls go through the API layer (headers, refresh, error handling).
+  // `apiFetch` will throw on non-2xx; return true on success.
+  await apiFetch(endpoint, { method: 'GET', skipAuth: true });
+  return true;
 }
 
 /**
@@ -67,21 +62,19 @@ export default function BackendHealthNotifier({
 
     const runCheck = async () => {
       try {
-        const res = await checkBackend(endpoint, timeoutMs);
+        await checkBackend(endpoint, timeoutMs);
         if (!mounted) return;
-        if (res && res.ok) {
-          // debug log so developers can see the successful check in console
-          try {
-            if (typeof console !== 'undefined' && typeof console.debug === 'function') {
-              console.debug(`[backend-check] backend reachable: ${endpoint} (status=${res.status})`);
-            }
-          } catch (e) {
-            void e;
+        // debug log so developers can see the successful check in console
+        try {
+          if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+            console.debug(`[backend-check] backend reachable: ${endpoint}`);
           }
-          if (!showOnce || !shownRef.current) {
-            shownRef.current = true;
-            show(toastMessage, 'info');
-          }
+        } catch (e) {
+          void e;
+        }
+        if (!showOnce || !shownRef.current) {
+          shownRef.current = true;
+          show(toastMessage, 'info');
         }
       } catch (err) {
         // Log failure to console to help debugging when no toast appears
