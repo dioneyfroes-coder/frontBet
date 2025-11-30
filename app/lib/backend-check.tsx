@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useToast } from '../components/ToastProvider';
 
 export type BackendCheckOptions = {
@@ -8,9 +8,10 @@ export type BackendCheckOptions = {
   showOnce?: boolean; // only show toast once (default true)
   timeoutMs?: number; // fetch timeout in ms
   enabled?: boolean; // allow easily toggling the module off
+  debugShowTestToast?: boolean; // show a test toast on mount (debug)
 };
 
-export async function checkBackend(endpoint = '/api/health', timeoutMs = 5000) {
+export async function checkBackend(endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`, timeoutMs = 5000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -32,7 +33,7 @@ export async function checkBackend(endpoint = '/api/health', timeoutMs = 5000) {
  * any top-level layout).
  */
 export default function BackendHealthNotifier({
-  endpoint = '/api/health',
+  endpoint = `${process.env.NEXT_PUBLIC_API_BASE_URL}/health`,
   intervalMs = null,
   toastMessage = 'Conexão com backend estabelecida',
   showOnce = true,
@@ -47,15 +48,19 @@ export default function BackendHealthNotifier({
     if (!enabled) return undefined;
 
     try {
-      console.debug && console.debug(`[backend-check] initialized (endpoint=${endpoint}, intervalMs=${String(intervalMs)})`);
-    } catch {
-      // ignore
+      if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+        console.debug(`[backend-check] initialized (endpoint=${endpoint}, intervalMs=${String(intervalMs)})`);
+      }
+    } catch (e) {
+      void e;
     }
 
     if (debugShowTestToast) {
       try {
         show('Backend check initialized (debug)', 'info');
-      } catch {}
+      } catch (e) {
+        void e;
+      }
     }
 
     let mounted = true;
@@ -67,9 +72,11 @@ export default function BackendHealthNotifier({
         if (res && res.ok) {
           // debug log so developers can see the successful check in console
           try {
-            console.debug && console.debug(`[backend-check] backend reachable: ${endpoint} (status=${res.status})`);
-          } catch {
-            // ignore in environments where console.debug is not available
+            if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+              console.debug(`[backend-check] backend reachable: ${endpoint} (status=${res.status})`);
+            }
+          } catch (e) {
+            void e;
           }
           if (!showOnce || !shownRef.current) {
             shownRef.current = true;
@@ -79,9 +86,11 @@ export default function BackendHealthNotifier({
       } catch (err) {
         // Log failure to console to help debugging when no toast appears
         try {
-          console.debug && console.debug(`[backend-check] check failed: ${endpoint}`, err);
-        } catch {
-          // ignore
+          if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+            console.debug(`[backend-check] check failed: ${endpoint}`, err);
+          }
+        } catch (e) {
+          void e;
         }
         // Swallow errors here — this module only notifies on success.
       }
@@ -99,7 +108,7 @@ export default function BackendHealthNotifier({
       mounted = false;
       if (timer) clearInterval(timer);
     };
-  }, [endpoint, intervalMs, toastMessage, showOnce, timeoutMs, enabled, show]);
+  }, [endpoint, intervalMs, toastMessage, showOnce, timeoutMs, enabled, show, debugShowTestToast]);
 
   return null;
 }
