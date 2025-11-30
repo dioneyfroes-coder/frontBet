@@ -68,7 +68,12 @@ function RootApp({ loaderData }: Route.ComponentProps) {
       <ToastProvider>
         <ErrorHandlerRegistrar />
         <ClerkTokenRegistrar />
-        <BackendHealthNotifier endpoint="/api/health" intervalMs={60000} enabled={process.env.NODE_ENV !== 'production'} />
+        <BackendHealthNotifier
+          endpoint="/api/health"
+          intervalMs={60000}
+          enabled={process.env.NODE_ENV !== 'production'}
+          debugShowTestToast={true}
+        />
         <Outlet />
       </ToastProvider>
     </ClerkProvider>
