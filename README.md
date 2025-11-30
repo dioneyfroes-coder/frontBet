@@ -64,23 +64,23 @@ Configurando variáveis de ambiente
 - A variável recomendada para configurar a URL base do backend é `NEXT_PUBLIC_API_BASE_URL`. O código mantém compatibilidade com nomes antigos, mas prefira usar essa.
 - Timeout de requisição: `API_TIMEOUT_MS` (milissegundos, `0` = sem timeout).
 
-Ativando/desativando mocks (MSW)
+Mocking / Mocks
 
-- Para ativar mocks no browser (builds), defina `NEXT_PUBLIC_USE_MOCKS=true` antes de compilar/rodar o app.
-- Para ativar mocks em ambientes Node (scripts, CI), defina `USE_MOCKS=true`.
-- Nos testes, mocks são ativados automaticamente quando `NODE_ENV==='test'`.
+- Mocks e dados de exemplo foram removidos do fluxo padrão do projeto. A aplicação e os componentes devem buscar dados diretamente do backend definido em `NEXT_PUBLIC_API_BASE_URL`.
+- Para rodar os testes de integração contra o backend real, exporte `USE_REAL_BACKEND=true` (e para testes de autenticação `RUN_AUTH_INTEGRATION=true` quando aplicável).
+- Se você precisar de um ambiente mock local para desenvolvimento, reintroduzir MSW é possível, mas não é parte do fluxo padrão — fale com o time/maintainer para orientação.
 
-Exemplo rápido:
+Exemplo rápido (rodando contra o backend configurado em `.env`):
 
 ```
-# use o exemplo para criar seu .env local
+# copie o arquivo de exemplo e ajuste `NEXT_PUBLIC_API_BASE_URL`
 cp .env.example .env
 
-# ativar mocks localmente
-export NEXT_PUBLIC_USE_MOCKS=true
-
-# rodar app
+# rodar app (usa o backend definido por `NEXT_PUBLIC_API_BASE_URL`)
 npm run dev
+
+# rodar testes unitários (integração contra backend real só com flag)
+# USE_REAL_BACKEND=true npm test
 ```
 
 Integração contínua (GitHub Actions)

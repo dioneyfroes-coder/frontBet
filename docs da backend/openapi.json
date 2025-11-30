@@ -14,11 +14,11 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "https://backbet.onrender.com/",
       "description": "Desenvolvimento"
     },
     {
-      "url": "https://api.backbet.com",
+      "url": "https://backbet.onrender.com/",
       "description": "Produção"
     }
   ],

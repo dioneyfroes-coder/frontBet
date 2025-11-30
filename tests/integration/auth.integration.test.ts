@@ -2,7 +2,6 @@ import { expect, it, describe } from 'vitest';
 
 import { apiFetch, ApiError } from '../../app/lib/api';
 import { setTokens, clearTokens } from '../../app/lib/token';
-import { server, http } from '../../app/mocks/server';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -45,26 +44,8 @@ describeMaybe('Auth integration flow (login -> authorized request -> logout)', (
     // persist tokens as frontend would
     setTokens({ accessToken, refreshToken });
 
-    // 2) Override /api/wallets/me to assert Authorization header value
-    server.use(
-      http.get(
-        ({ request }: any) => new URL(request.url).pathname === '/api/wallets/me',
-        ({ request }: any) => {
-          const header = request.headers.get('authorization') || '';
-          if (header !== `Bearer ${accessToken}`) {
-            return new Response(JSON.stringify({ error: 'missing auth' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            });
-          }
-          return new Response(JSON.stringify({ success: true, data: { ok: true } }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          });
-        }
-      )
-    );
-
+    // 2) Call the real backend endpoint. This test expects a running backend
+    // when `USE_REAL_BACKEND=true` is set in the environment.
     const wallet = await apiFetch('/api/wallets/me');
     const w = wallet as unknown;
     let ok = false;

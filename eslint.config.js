@@ -37,6 +37,17 @@ export default [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      // Disallow direct use of global `fetch` to enforce using the central api layer.
+      // Use `apiFetch` / rest helpers in `app/lib/api` instead so headers, refresh
+      // logic and error handling remain consistent.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.name='fetch']",
+          message:
+            'Direct `fetch()` is disallowed in application code. Use the central `apiFetch` or rest helpers from `app/lib/api`.',
+        },
+      ],
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
       'react-hooks/set-state-in-effect': 'off',
@@ -49,6 +60,20 @@ export default [
         files: ['*.ts', '*.tsx'],
         parserOptions: { project: './tsconfig.json' },
         rules: {},
+      },
+      // Allow `fetch` inside our central API implementation and token refresh helper.
+      {
+        files: ['app/lib/api/**', 'app/lib/token.ts'],
+        rules: {
+          'no-restricted-syntax': 'off',
+        },
+      },
+      // Allow scripts and tooling to call fetch directly.
+      {
+        files: ['scripts/**', 'scripts/*'],
+        rules: {
+          'no-restricted-syntax': 'off',
+        },
       },
     ],
   }),

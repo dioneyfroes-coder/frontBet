@@ -12,8 +12,8 @@ slug: "/docs/api"
 
 | Ambiente | URL base | Docs interativos |
 |----------|----------|------------------|
-| Desenvolvimento | `http://localhost:3000/api` | `http://localhost:3000/api/docs` |
-| Produção (exemplo) | `https://api.backbet.com/api` | `https://api.backbet.com/api/docs` |
+| Desenvolvimento | `https://backbet.onrender.com/api` | `https://backbet.onrender.com/api/docs` |
+| Produção (exemplo) | `https://backbet.onrender.com/api` | `https://backbet.onrender.com/api/docs` |
 
 > A especificação completa está disponível em `/api/docs.json` (OpenAPI 3.1) e usa os mesmos `servers` com prefixo `/api`. Todos os exemplos usam versão v1.
 
@@ -181,17 +181,17 @@ Todas protegidas por bearer token + cache opcional (`cacheUserProfileMiddleware`
 ### cURL de referência
 
 ```bash
-TOKEN="$(curl -s -X POST http://localhost:3000/api/auth/login   -H 'Content-Type: application/json'   -d '{"email":"dev@example.com","password":"Password123!"}' | jq -r '.data.accessToken')"
+TOKEN="$(curl -s -X POST https://backbet.onrender.com/api/auth/login   -H 'Content-Type: application/json'   -d '{"email":"dev@example.com","password":"Password123!"}' | jq -r '.data.accessToken')"
 
-curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/wallets/me | jq
+curl -H "Authorization: Bearer $TOKEN" https://backbet.onrender.com/api/wallets/me | jq
 ```
 
 ### Observabilidade endpoints
 
 ```bash
-curl http://localhost:3000/health
-curl http://localhost:3000/readiness | jq
-curl -i http://localhost:3000/metrics
+curl https://backbet.onrender.com/health
+curl https://backbet.onrender.com/readiness | jq
+curl -i https://backbet.onrender.com/metrics
 ```
 
 ## Configurações relevantes
