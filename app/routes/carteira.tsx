@@ -15,6 +15,7 @@ import { FadeIn } from '../components/animation';
 import { requireAuth } from '../utils/auth.server';
 import type { LiveChannel, PixRequest, Transaction, TransactionType } from '../types/wallet';
 import { useI18n } from '../i18n/i18n-provider';
+import { cfg, formatMoney, formatMessage } from '../lib/config';
 import { getPageMeta } from '../i18n/page-copy';
 import type { Route } from './+types/carteira';
 
@@ -241,12 +242,16 @@ export default function Carteira() {
       startPixTransition(() => {
         const amount = parseAmount(depositAmount);
         if (Number.isNaN(amount) || amount < 10) {
-          setDepositError(errorsCopy.depositMin);
+          setDepositError(
+            formatMessage(errorsCopy.depositMin, { minDeposit: formatMoney(cfg.MIN_DEPOSIT) })
+          );
           setPixRequest(null);
           return;
         }
         if (amount > 15000) {
-          setDepositError(errorsCopy.depositMax);
+          setDepositError(
+            formatMessage(errorsCopy.depositMax, { maxDeposit: formatMoney(cfg.MAX_DEPOSIT) })
+          );
           setPixRequest(null);
           return;
         }
@@ -283,7 +288,12 @@ export default function Carteira() {
       startWithdrawTransition(() => {
         const amount = parseAmount(withdrawAmount);
         if (Number.isNaN(amount) || amount < 20) {
-          setWithdrawNote({ status: 'error', message: errorsCopy.withdrawMin });
+          setWithdrawNote({
+            status: 'error',
+            message: formatMessage(errorsCopy.withdrawMin, {
+              minWithdrawal: formatMoney(cfg.MIN_WITHDRAWAL),
+            }),
+          });
           return;
         }
         if (amount > balance - 50) {
