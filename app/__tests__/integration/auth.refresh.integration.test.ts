@@ -1,5 +1,4 @@
 import { expect, it, describe } from 'vitest';
-import { server, http } from '../../mocks/server';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -15,46 +14,11 @@ describeMaybe('Auth refresh flow (401 -> refresh -> retry)', () => {
     // ensure clean state
     clearTokens();
 
-    // seed expired tokens
+    // seed expired tokens. The backend must accept the refresh token and
+    // issue new tokens for this test to pass when `USE_REAL_BACKEND=true`.
     setTokens({ accessToken: 'expired-token', refreshToken: 'refresh-old' });
 
-    // handler for refresh endpoint: return new tokens
-    server.use(
-      http.post(
-        ({ request }: any) => new URL(request.url).pathname === '/api/auth/refresh',
-        async () => {
-          const body = JSON.stringify({
-            success: true,
-            data: { accessToken: 'new-token', refreshToken: 'new-refresh' },
-          });
-          return new Response(body, {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          });
-        }
-      )
-    );
-
-    // handler for wallet endpoint: require Authorization==Bearer new-token
-    server.use(
-      http.get(
-        ({ request }: any) => new URL(request.url).pathname === '/api/wallets/me',
-        ({ request }: any) => {
-          const header = request.headers.get('authorization') || '';
-          if (header !== `Bearer new-token`) {
-            return new Response(JSON.stringify({ error: 'unauthorized' }), {
-              status: 401,
-              headers: { 'Content-Type': 'application/json' },
-            });
-          }
-          return new Response(JSON.stringify({ success: true, data: { wallet: { id: 'w1' } } }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
-          });
-        }
-      )
-    );
-
+    // Call the real backend and expect it to perform refresh and return a wallet.
     const res = await apiFetch('/api/wallets/me');
     // validate response shape safely
     const r = res as unknown;
