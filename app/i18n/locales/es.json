@@ -322,9 +322,9 @@
       "falhou": "Falló"
     },
     "errors": {
-      "depositMin": "Ingresa al menos R$ 10,00.",
-      "depositMax": "Máximo por operación R$ 15.000,00.",
-      "withdrawMin": "Retiro mínimo R$ 20,00.",
+      "depositMin": "Ingresa al menos {minDeposit}.",
+      "depositMax": "Máximo por operación {maxDeposit}.",
+      "withdrawMin": "Retiro mínimo {minWithdrawal}.",
       "withdrawBalance": "Saldo insuficiente.",
       "withdrawPixKey": "Ingresa una clave PIX válida."
     },
@@ -386,21 +386,9 @@
     "description": "Complementos opcionales para potenciar tu estrategia.",
     "addToCart": "Agregar",
     "products": [
-      {
-        "name": "Boost de cuotas",
-        "description": "Eleva hasta 15% el retorno de múltiples seleccionadas.",
-        "price": "R$ 29,90"
-      },
-      {
-        "name": "Reportes avanzados",
-        "description": "Insights personalizados según tu historial.",
-        "price": "R$ 19,90/mes"
-      },
-      {
-        "name": "Alertas premium",
-        "description": "Notificaciones push cuando la cuota llega a tu precio.",
-        "price": "R$ 14,90/mes"
-      }
+      { "name": "Boost de cuotas", "description": "Eleva hasta 15% el retorno de múltiples seleccionadas.", "price": "" },
+      { "name": "Reportes avanzados", "description": "Insights personalizados según tu historial.", "price": "" },
+      { "name": "Alertas premium", "description": "Notificaciones push cuando la cuota llega a tu precio.", "price": "" }
     ]
   },
   "profile": {
@@ -411,19 +399,15 @@
     "title": "Tu panel",
     "description": "Resumen financiero, límites personalizados e historial rápido de apuestas.",
     "stats": [
-      { "label": "Banca actual", "value": "R$ 2.450,00" },
-      { "label": "Ganancia del mes", "value": "+18%" },
-      { "label": "Apuestas activas", "value": "6" }
+      { "label": "Banca actual" },
+      { "label": "Ganancia del mes" },
+      { "label": "Apuestas activas" }
     ],
     "history": {
       "title": "Historial reciente",
       "subtitle": "Últimos movimientos del mes",
       "cta": "Ver completo",
-      "entries": [
-        { "event": "Brasileirão - Victoria de Bahía", "odd": "2.30", "status": "won" },
-        { "event": "Libertadores - Más de 2.5 goles", "odd": "1.90", "status": "open" },
-        { "event": "NBA - Handicap Celtics", "odd": "1.85", "status": "lost" }
-      ],
+      "entries": [],
       "statusLabels": {
         "won": "Ganada",
         "open": "Abierta",

@@ -384,9 +384,9 @@
       "falhou": "Falhou"
     },
     "errors": {
-      "depositMin": "Informe pelo menos R$ 10,00.",
-      "depositMax": "O limite por operação é R$ 15.000,00.",
-      "withdrawMin": "Valor mínimo para saque é R$ 20,00.",
+      "depositMin": "Informe pelo menos {minDeposit}.",
+      "depositMax": "O limite por operação é {maxDeposit}.",
+      "withdrawMin": "Valor mínimo para saque é {minWithdrawal}.",
       "withdrawBalance": "Saldo insuficiente.",
       "withdrawPixKey": "Informe uma chave PIX válida."
     },
@@ -448,21 +448,9 @@
     "description": "Ferramentas opcionais para turbinar seus palpites.",
     "addToCart": "Adicionar",
     "products": [
-      {
-        "name": "Boost de odds",
-        "description": "Aumente em até 15% o retorno de múltiplas selecionadas.",
-        "price": "R$ 29,90"
-      },
-      {
-        "name": "Relatórios avançados",
-        "description": "Insights personalizados com base no seu histórico.",
-        "price": "R$ 19,90/mês"
-      },
-      {
-        "name": "Alertas premium",
-        "description": "Notificações push quando odds atingirem seu preço-alvo.",
-        "price": "R$ 14,90/mês"
-      }
+      { "name": "Boost de odds", "description": "Aumente em até 15% o retorno de múltiplas selecionadas.", "price": "" },
+      { "name": "Relatórios avançados", "description": "Insights personalizados com base no seu histórico.", "price": "" },
+      { "name": "Alertas premium", "description": "Notificações push quando odds atingirem seu preço-alvo.", "price": "" }
     ]
   },
   "profile": {
@@ -473,19 +461,15 @@
     "title": "Seu painel",
     "description": "Resumo financeiro, limites personalizados e histórico recente de apostas.",
     "stats": [
-      { "label": "Banca atual", "value": "R$ 2.450,00" },
-      { "label": "Lucro no mês", "value": "+18%" },
-      { "label": "Palpites ativos", "value": "6" }
+      { "label": "Banca atual" },
+      { "label": "Lucro no mês" },
+      { "label": "Palpites ativos" }
     ],
     "history": {
       "title": "Histórico recente",
       "subtitle": "Últimas movimentações do mês",
       "cta": "Ver completo",
-      "entries": [
-        { "event": "Brasileirão - Vitória do Bahia", "odd": "2.30", "status": "won" },
-        { "event": "Libertadores - +2.5 gols", "odd": "1.90", "status": "open" },
-        { "event": "NBA - Handicap Celtics", "odd": "1.85", "status": "lost" }
-      ],
+      "entries": [],
       "statusLabels": {
         "won": "Ganho",
         "open": "Em aberto",

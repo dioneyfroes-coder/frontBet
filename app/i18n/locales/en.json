@@ -314,9 +314,9 @@
       "falhou": "Failed"
     },
     "errors": {
-      "depositMin": "Enter at least R$ 10.00.",
-      "depositMax": "Maximum per operation is R$ 15,000.00.",
-      "withdrawMin": "Minimum withdrawal is R$ 20.00.",
+      "depositMin": "Enter at least {minDeposit}.",
+      "depositMax": "Maximum per operation is {maxDeposit}.",
+      "withdrawMin": "Minimum withdrawal is {minWithdrawal}.",
       "withdrawBalance": "Insufficient balance.",
       "withdrawPixKey": "Provide a valid PIX key."
     },
@@ -497,36 +497,7 @@
     "filters": {
       "todos": "All events"
     },
-    "events": [
-      {
-        "id": "evt-1",
-        "type": "Login",
-        "description": "Session authenticated successfully",
-        "timestamp": "25/11/2025 09:12",
-        "device": "Chrome · São Paulo"
-      },
-      {
-        "id": "evt-2",
-        "type": "Deposit",
-        "description": "PIX received - R$ 500,00",
-        "timestamp": "24/11/2025 22:08",
-        "device": "Mobile · Recife"
-      },
-      {
-        "id": "evt-3",
-        "type": "Configuration",
-        "description": "2FA enabled via authenticator app",
-        "timestamp": "24/11/2025 21:45",
-        "device": "Chrome · São Paulo"
-      },
-      {
-        "id": "evt-4",
-        "type": "Withdrawal",
-        "description": "PIX withdrawal request - R$ 300,00",
-        "timestamp": "23/11/2025 18:17",
-        "device": "Chrome · Curitiba"
-      }
-    ]
+    "events": []
   },
   "about": {
     "meta": {

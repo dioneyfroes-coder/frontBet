@@ -125,36 +125,7 @@
         "experiences": [
           {
             "id": "live-monitor",
-            "icon": "📡",
-            "name": "Live Match Monitor",
-            "summary": "Transmite eventos em campo com alertas sub-300ms e automações de staking.",
-            "highlights": [
-              "Alertas sincronizados",
-              "Kit inicial de Webhooks",
-              "Layouts multi tela"
-            ],
-            "cta": "Abrir módulo",
-            "href": "/games/live-monitor",
-            "badge": "Live"
-          },
-          {
-            "id": "odds-heatmap",
-            "icon": "🔥",
-            "name": "Odds Heatmap",
-            "summary": "Mapa térmico que detecta clusteres quentes antes do mercado.",
-            "highlights": ["18 books & exchanges", "Insights explicáveis", "Exporta para CSV"],
-            "cta": "Abrir módulo",
-            "href": "/games/odds-heatmap",
-            "badge": "Pro"
-          },
-          {
-            "id": "penalty-analytics",
-            "icon": "🥅",
-            "name": "Penalty Analytics",
-            "summary": "Simulador avançado para pênaltis e bolas paradas.",
-            "highlights": ["Templates por liga", "Dados do corpo técnico", "Dashboard pronto"],
-            "cta": "Abrir módulo",
-            "href": "/games/penalty-analytics"
+            "events": []
           }
         ]
       },
@@ -258,32 +229,7 @@
       "status": "Status",
       "recordedAt": "Registro"
     },
-    "entries": [
-      {
-        "id": "AUD-9823",
-        "action": "Saque PIX",
-        "amount": "R$ 300,00",
-        "status": "Aprovado",
-        "timestamp": "23/11/2025 18:17",
-        "agent": "Sistema"
-      },
-      {
-        "id": "AUD-9812",
-        "action": "Depósito PIX",
-        "amount": "R$ 500,00",
-        "status": "Concluído",
-        "timestamp": "24/11/2025 22:08",
-        "agent": "Usuário"
-      },
-      {
-        "id": "AUD-9755",
-        "action": "Limite diário ajustado",
-        "amount": "R$ 1.500,00",
-        "status": "Em revisão",
-        "timestamp": "21/11/2025 14:53",
-        "agent": "Analista"
-      }
-    ]
+    "entries": []
   },
   "wallet": {
     "meta": {
@@ -381,9 +327,9 @@
       "falhou": "Falhou"
     },
     "errors": {
-      "depositMin": "Informe pelo menos R$ 10,00.",
-      "depositMax": "O limite por operação é R$ 15.000,00.",
-      "withdrawMin": "Valor mínimo para saque é R$ 20,00.",
+      "depositMin": "Informe pelo menos {minDeposit}.",
+      "depositMax": "O limite por operação é {maxDeposit}.",
+      "withdrawMin": "Valor mínimo para saque é {minWithdrawal}.",
       "withdrawBalance": "Saldo insuficiente.",
       "withdrawPixKey": "Informe uma chave PIX válida."
     },
@@ -445,21 +391,9 @@
     "description": "Ferramentas opcionais para turbinar seus palpites.",
     "addToCart": "Adicionar",
     "products": [
-      {
-        "name": "Boost de odds",
-        "description": "Aumente em até 15% o retorno de múltiplas selecionadas.",
-        "price": "R$ 29,90"
-      },
-      {
-        "name": "Relatórios avançados",
-        "description": "Insights personalizados com base no seu histórico.",
-        "price": "R$ 19,90/mês"
-      },
-      {
-        "name": "Alertas premium",
-        "description": "Notificações push quando odds atingirem seu preço-alvo.",
-        "price": "R$ 14,90/mês"
-      }
+      { "name": "Boost de odds", "description": "Aumente em até 15% o retorno de múltiplas selecionadas.", "price": "" },
+      { "name": "Relatórios avançados", "description": "Insights personalizados com base no seu histórico.", "price": "" },
+      { "name": "Alertas premium", "description": "Notificações push quando odds atingirem seu preço-alvo.", "price": "" }
     ]
   },
   "profile": {
@@ -470,19 +404,15 @@
     "title": "Seu painel",
     "description": "Resumo financeiro, limites personalizados e histórico recente de apostas.",
     "stats": [
-      { "label": "Banca atual", "value": "R$ 2.450,00" },
-      { "label": "Lucro no mês", "value": "+18%" },
-      { "label": "Palpites ativos", "value": "6" }
+      { "label": "Banca atual" },
+      { "label": "Lucro no mês" },
+      { "label": "Palpites ativos" }
     ],
     "history": {
       "title": "Histórico recente",
       "subtitle": "Últimas movimentações do mês",
       "cta": "Ver completo",
-      "entries": [
-        { "event": "Brasileirão - Vitória do Bahia", "odd": "2.30", "status": "won" },
-        { "event": "Libertadores - +2.5 gols", "odd": "1.90", "status": "open" },
-        { "event": "NBA - Handicap Celtics", "odd": "1.85", "status": "lost" }
-      ],
+      "entries": [],
       "statusLabels": {
         "won": "Ganho",
         "open": "Em aberto",
