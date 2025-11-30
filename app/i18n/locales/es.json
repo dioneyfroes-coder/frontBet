@@ -386,9 +386,21 @@
     "description": "Complementos opcionales para potenciar tu estrategia.",
     "addToCart": "Agregar",
     "products": [
-      { "name": "Boost de cuotas", "description": "Eleva hasta 15% el retorno de múltiples seleccionadas.", "price": "" },
-      { "name": "Reportes avanzados", "description": "Insights personalizados según tu historial.", "price": "" },
-      { "name": "Alertas premium", "description": "Notificaciones push cuando la cuota llega a tu precio.", "price": "" }
+      {
+        "name": "Boost de cuotas",
+        "description": "Eleva hasta 15% el retorno de múltiples seleccionadas.",
+        "price": ""
+      },
+      {
+        "name": "Reportes avanzados",
+        "description": "Insights personalizados según tu historial.",
+        "price": ""
+      },
+      {
+        "name": "Alertas premium",
+        "description": "Notificaciones push cuando la cuota llega a tu precio.",
+        "price": ""
+      }
     ]
   },
   "profile": {

@@ -1,9 +1,12 @@
 import { memo } from 'react';
 import { useI18n } from '../i18n/i18n-provider';
+import { formatMessage } from '../lib/config';
 
 function SiteFooterComponent() {
   const { t } = useI18n();
-  const disclaimer = t('footer.disclaimer').replace('{year}', String(new Date().getFullYear()));
+  const disclaimer = formatMessage(t('footer.disclaimer'), {
+    year: String(new Date().getFullYear()),
+  });
 
   return (
     <footer className="border-t border-[color:var(--color-border)] bg-[var(--color-surface)] text-[var(--color-muted)]">

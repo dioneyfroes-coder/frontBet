@@ -391,9 +391,21 @@
     "description": "Ferramentas opcionais para turbinar seus palpites.",
     "addToCart": "Adicionar",
     "products": [
-      { "name": "Boost de odds", "description": "Aumente em até 15% o retorno de múltiplas selecionadas.", "price": "" },
-      { "name": "Relatórios avançados", "description": "Insights personalizados com base no seu histórico.", "price": "" },
-      { "name": "Alertas premium", "description": "Notificações push quando odds atingirem seu preço-alvo.", "price": "" }
+      {
+        "name": "Boost de odds",
+        "description": "Aumente em até 15% o retorno de múltiplas selecionadas.",
+        "price": ""
+      },
+      {
+        "name": "Relatórios avançados",
+        "description": "Insights personalizados com base no seu histórico.",
+        "price": ""
+      },
+      {
+        "name": "Alertas premium",
+        "description": "Notificações push quando odds atingirem seu preço-alvo.",
+        "price": ""
+      }
     ]
   },
   "profile": {

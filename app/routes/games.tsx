@@ -14,6 +14,7 @@ import { Button } from '../components/ui/button';
 import { useI18n } from '../i18n/i18n-provider';
 import { getPageMeta } from '../i18n/page-copy';
 import type { GamesHubCopy } from '../types/i18n';
+import { formatMessage } from '../lib/config';
 
 const catalogFilters = ['all', 'sports', 'casino', 'forex'] as const;
 type CatalogFilter = (typeof catalogFilters)[number];
@@ -38,6 +39,10 @@ export function meta({}: Route.MetaArgs) {
 export default function GamesCatalog() {
   const { messages } = useI18n();
   const copy: GamesHubCopy = messages.gamesHub;
+  const sections = useMemo(
+    () => (Array.isArray(copy.sections) ? copy.sections : []),
+    [copy.sections]
+  );
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchParamsSignature = searchParams.toString();
@@ -93,9 +98,9 @@ export default function GamesCatalog() {
 
   const groupedSections = useMemo(() => {
     const term = deferredSearch.trim().toLowerCase();
-    return copy.sections.reduce<
+    return sections.reduce<
       Array<{
-        section: (typeof copy.sections)[number];
+        section: (typeof sections)[number];
         experiences: GameExperience[];
       }>
     >((acc, section) => {
@@ -103,22 +108,42 @@ export default function GamesCatalog() {
         return acc;
       }
 
-      const experiences = section.experiences.filter((experience) => {
-        if (!term) return true;
-        const haystack =
-          `${experience.name} ${experience.summary} ${experience.highlights.join(' ')}`.toLowerCase();
-        return haystack.includes(term);
-      }) as GameExperience[];
+      const rawExperiences = (section as unknown as { experiences?: unknown }).experiences ?? [];
+      const experiences = Array.isArray(rawExperiences)
+        ? (rawExperiences as unknown[]).filter((experience) => {
+            if (!term) return true;
+            const haystack = JSON.stringify(experience).toLowerCase();
+            return haystack.includes(term);
+          })
+        : [];
 
       if (experiences.length > 0) {
-        acc.push({ section, experiences });
+        acc.push({ section, experiences: experiences as GameExperience[] });
       }
       return acc;
     }, []);
-  }, [activeFilter, copy, deferredSearch]);
+  }, [activeFilter, sections, deferredSearch]);
+
+  // If there are no sections provided by translations/backend, show a simplified placeholder
+  if (sections.length === 0) {
+    const fallbackMessage =
+      copy.comingSoon ?? copy.heroDescription ?? 'Catálogo de jogos em breve.';
+    return (
+      <PageShell title={copy.heroTitle} description={copy.heroDescription} eyebrow={copy.heroTag}>
+        <div className="space-y-6 p-6">
+          <section className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface)] p-6 text-center">
+            <h2 className="text-2xl font-semibold">{copy.heroTitle}</h2>
+            <p className="text-sm text-[var(--color-muted)]">{fallbackMessage}</p>
+          </section>
+        </div>
+      </PageShell>
+    );
+  }
 
   const totalResults = groupedSections.reduce((acc, entry) => acc + entry.experiences.length, 0);
-  const resultLabel = copy.filters.resultTemplate.replace('{count}', String(totalResults));
+  const resultLabel = formatMessage(copy.filters.resultTemplate ?? '{count} resultados', {
+    count: String(totalResults),
+  });
 
   return (
     <PageShell title={copy.heroTitle} description={copy.heroDescription} eyebrow={copy.heroTag}>
@@ -174,7 +199,7 @@ export default function GamesCatalog() {
                 <p className="text-sm text-[var(--color-muted)]">{section.description}</p>
               </div>
               <span className="text-sm text-[var(--color-muted)]">
-                {copy.filters.resultTemplate.replace('{count}', String(experiences.length))}
+                {formatMessage(copy.filters.resultTemplate, { count: String(experiences.length) })}
               </span>
             </header>
 

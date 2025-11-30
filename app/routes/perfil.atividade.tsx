@@ -7,6 +7,7 @@ import { Input } from '../components/ui/input';
 import { requireAuth } from '../utils/auth.server';
 import { useI18n } from '../i18n/i18n-provider';
 import { getPageMeta } from '../i18n/page-copy';
+import { formatMessage } from '../lib/config';
 
 export function meta({}: Route.MetaArgs) {
   const meta = getPageMeta('activity');
@@ -63,7 +64,7 @@ export default function AtividadeRecente() {
             <div className="text-sm text-[var(--color-muted)]">
               {isFiltering
                 ? activityCopy.filtering
-                : activityCopy.totalTemplate.replace('{count}', String(filteredEvents.length))}
+                : formatMessage(activityCopy.totalTemplate, { count: filteredEvents.length })}
             </div>
           </div>
           <div className="flex flex-wrap gap-2">

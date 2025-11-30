@@ -183,10 +183,10 @@ export default function Carteira() {
       return walletCopy.timeSince.updatedNow;
     }
     if (diff < 60) {
-      return walletCopy.timeSince.secondsAgo.replace('{count}', String(diff));
+      return formatMessage(walletCopy.timeSince.secondsAgo, { count: String(diff) });
     }
     const minutes = Math.floor(diff / 60);
-    return walletCopy.timeSince.minutesAgo.replace('{count}', String(minutes));
+    return formatMessage(walletCopy.timeSince.minutesAgo, { count: String(minutes) });
   }, [lastUpdate, nowTick, walletCopy.timeSince]);
 
   const pendingTransactions = useMemo(
@@ -377,7 +377,7 @@ export default function Carteira() {
             </CardContent>
             <CardFooter className="flex flex-col gap-2 text-sm text-[var(--color-muted)] md:flex-row md:items-center md:justify-between">
               <span>
-                {summaryCard.pendingTemplate.replace('{count}', String(pendingTransactions))}
+                {formatMessage(summaryCard.pendingTemplate, { count: String(pendingTransactions) })}
               </span>
               <span className="flex flex-wrap items-center gap-2">
                 <span>{summaryCard.activeChannels}</span>
@@ -541,10 +541,9 @@ export default function Carteira() {
               <div className="text-sm text-[var(--color-muted)]">
                 {isFilteringHistory
                   ? historyCopy.filtering
-                  : historyCopy.totalTemplate.replace(
-                      '{count}',
-                      String(filteredTransactions.length)
-                    )}
+                  : formatMessage(historyCopy.totalTemplate, {
+                      count: String(filteredTransactions.length),
+                    })}
               </div>
             </div>
             <div className="flex flex-wrap gap-2">

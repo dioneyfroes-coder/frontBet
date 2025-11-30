@@ -1,6 +1,6 @@
 import type { Route } from './+types/perfil';
 import type { ChangeEvent, FormEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PageShell } from '../components/page-shell';
 import { FadeIn, SlideUp } from '../components/animation';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
@@ -9,6 +9,30 @@ import { Input } from '../components/ui/input';
 import { Toggle } from '../components/ui/toggle';
 import { requireAuth } from '../utils/auth.server';
 import { useI18n } from '../i18n/i18n-provider';
+import { formatMessage } from '../lib/config';
+import { apiFetch } from '../lib/api/index';
+
+interface StatItem {
+  label?: string;
+  value?: string | number;
+}
+
+interface HistoryEntry {
+  event?: string;
+  odd?: string | number;
+  status?: string;
+}
+
+interface UserProfile {
+  name?: string;
+  email?: string;
+  phone?: string;
+  document?: string;
+  bio?: string;
+  stats?: StatItem[];
+  history?: { entries?: HistoryEntry[] };
+  notifications?: Record<string, boolean>;
+}
 import { getPageMeta } from '../i18n/page-copy';
 import type { ProfileCopy, ProfileHistoryStatus } from '../types/i18n';
 
@@ -18,24 +42,62 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Perfil() {
+  const { messages } = useI18n();
+  const profileCopy: ProfileCopy = messages.profile;
+
+  // Start with empty form state; backend will populate when available.
   const [profileForm, setProfileForm] = useState({
-    name: 'Dioney Froes',
-    email: 'dioney@frontbet.com',
-    phone: '+55 (11) 98221-1010',
-    document: '154.982.000-12',
-    bio: 'Analista de risco apaixonado por automatizar o que posso e entender o que ainda precisa de feeling humano.',
+    name: '',
+    email: '',
+    phone: '',
+    document: '',
+    bio: '',
   });
   const [profileStatus, setProfileStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [documentStatus, setDocumentStatus] = useState<'idle' | 'uploading' | 'processed'>('idle');
   const [documentName, setDocumentName] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
-    security: true,
-  });
 
-  const { messages } = useI18n();
-  const profileCopy: ProfileCopy = messages.profile;
+  // Build notifications initial state from translation keys when backend not available.
+  const initialNotifications = (profileCopy?.notifications?.items ?? []).reduce(
+    (acc, it) => ({ ...acc, [it.id]: false }),
+    {} as Record<string, boolean>
+  );
+  const [notifications, setNotifications] = useState<Record<string, boolean>>(initialNotifications);
+
+  const [remoteProfile, setRemoteProfile] = useState<null | Record<string, unknown>>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await apiFetch('/api/users/me');
+        if (!mounted || !res) return;
+        setRemoteProfile(res as Record<string, unknown>);
+        // seed client form values if available
+        const maybe = res as unknown;
+        const user = (maybe as { user?: unknown }).user ?? maybe;
+        if (user && typeof user === 'object') {
+          const u = user as UserProfile;
+          setProfileForm((current) => ({
+            ...current,
+            name: u.name ?? current.name,
+            email: u.email ?? current.email,
+            phone: u.phone ?? current.phone,
+            document: u.document ?? current.document,
+            bio: u.bio ?? current.bio,
+          }));
+          if (u.notifications && typeof u.notifications === 'object') {
+            setNotifications((current) => ({ ...current, ...u.notifications }));
+          }
+        }
+      } catch {
+        // ignore — fall back to translation copy
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleProfileSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,16 +118,22 @@ export default function Perfil() {
   return (
     <PageShell title={profileCopy.title} description={profileCopy.description}>
       <section className="grid gap-6 md:grid-cols-3">
-        {profileCopy.stats.map((item, index) => (
-          <FadeIn key={item.label} delay={index * 0.1}>
-            <Card>
-              <CardContent className="p-5">
-                <p className="text-sm text-[var(--color-muted)]">{item.label}</p>
-                <p className="text-2xl font-semibold">{item.value}</p>
-              </CardContent>
-            </Card>
-          </FadeIn>
-        ))}
+        {(Array.isArray((remoteProfile as unknown as UserProfile)?.stats)
+          ? ((remoteProfile as unknown as UserProfile).stats as unknown[])
+          : profileCopy.stats
+        ).map((item: unknown, index: number) => {
+          const it = item as Record<string, unknown>;
+          return (
+            <FadeIn key={String(it.label ?? index)} delay={index * 0.1}>
+              <Card>
+                <CardContent className="p-5">
+                  <p className="text-sm text-[var(--color-muted)]">{String(it.label ?? '')}</p>
+                  <p className="text-2xl font-semibold">{String(it.value ?? '')}</p>
+                </CardContent>
+              </Card>
+            </FadeIn>
+          );
+        })}
       </section>
 
       <SlideUp>
@@ -84,30 +152,42 @@ export default function Perfil() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {profileCopy.history.entries.map((item) => (
-              <div
-                key={item.event}
-                className="flex flex-wrap items-center justify-between gap-2 border-b border-[color:var(--color-border)] pb-3 last:border-b-0 last:pb-0"
-              >
-                <div>
-                  <p className="font-medium">{item.event}</p>
-                  <p className="text-sm text-[var(--color-muted)]">
-                    {profileCopy.history.oddTemplate.replace('{odd}', item.odd)}
-                  </p>
-                </div>
-                <span
-                  className={`rounded-full px-3 py-1 text-sm ${
-                    item.status === 'won'
-                      ? 'bg-emerald-500/20 text-emerald-500'
-                      : item.status === 'lost'
-                        ? 'bg-rose-500/20 text-rose-500'
-                        : 'bg-amber-500/20 text-amber-500'
-                  }`}
+            {(
+              (remoteProfile as unknown as UserProfile)?.history?.entries ??
+              profileCopy.history.entries
+            ).map((item: unknown, idx: number) => {
+              const it = item as Record<string, unknown>;
+              return (
+                <div
+                  key={String(it.event ?? `entry-${idx}`)}
+                  className="flex flex-wrap items-center justify-between gap-2 border-b border-[color:var(--color-border)] pb-3 last:border-b-0 last:pb-0"
                 >
-                  {profileCopy.history.statusLabels[item.status as ProfileHistoryStatus]}
-                </span>
-              </div>
-            ))}
+                  <div>
+                    <p className="font-medium">{String(it.event ?? '')}</p>
+                    <p className="text-sm text-[var(--color-muted)]">
+                      {formatMessage(profileCopy.history.oddTemplate, {
+                        odd: String(it.odd ?? ''),
+                      })}
+                    </p>
+                  </div>
+                  <span
+                    className={`rounded-full px-3 py-1 text-sm ${
+                      String(it.status ?? '') === 'won'
+                        ? 'bg-emerald-500/20 text-emerald-500'
+                        : String(it.status ?? '') === 'lost'
+                          ? 'bg-rose-500/20 text-rose-500'
+                          : 'bg-amber-500/20 text-amber-500'
+                    }`}
+                  >
+                    {
+                      profileCopy.history.statusLabels[
+                        String(it.status ?? '') as ProfileHistoryStatus
+                      ]
+                    }
+                  </span>
+                </div>
+              );
+            })}
           </CardContent>
           <CardFooter className="text-xs text-[var(--color-muted)]">
             {profileCopy.history.footer}
@@ -258,7 +338,7 @@ export default function Perfil() {
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
-              {profileCopy.notifications.items.map((item) => {
+              {(profileCopy.notifications.items ?? []).map((item) => {
                 const key = item.id as keyof typeof notifications;
                 return (
                   <Toggle
