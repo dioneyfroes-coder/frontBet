@@ -69,7 +69,7 @@ function RootApp({ loaderData }: Route.ComponentProps) {
         <ErrorHandlerRegistrar />
         <ClerkTokenRegistrar />
         <BackendHealthNotifier
-          endpoint="/api/health"
+          endpoint="https://backbet.onrender.com/health"
           intervalMs={60000}
           enabled={process.env.NODE_ENV !== 'production'}
           debugShowTestToast={true}
