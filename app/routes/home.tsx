@@ -5,7 +5,7 @@ import { PageShell } from '../components/page-shell';
 import { FadeIn, HoverLift, SlideUp } from '../components/animation';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { gameRegistry } from '../data/game-registry';
+import { useGames } from '../hooks/useGames';
 import { useI18n } from '../i18n/i18n-provider';
 import { getPageMeta } from '../i18n/page-copy';
 import { getHomeContent } from '../lib/api/clients/home';
@@ -37,6 +37,7 @@ export default function Home() {
   const navigate = useNavigate();
   const { messages } = useI18n();
   const homeCopy = messages.home;
+  const { data: remoteGames } = useGames();
   const [remoteCopy, setRemoteCopy] = useState<Partial<typeof homeCopy> | null>(null);
 
   useEffect(() => {
@@ -166,7 +167,7 @@ export default function Home() {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              {gameRegistry.slice(0, 3).map((game) => (
+              {(remoteGames ?? []).slice(0, 3).map((game) => (
                 <div
                   key={game.id}
                   className="flex flex-col gap-2 rounded-2xl border border-[color:var(--color-border)] p-4"

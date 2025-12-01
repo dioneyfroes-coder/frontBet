@@ -1,33 +1,31 @@
-import { useEffect, useState } from 'react';
-import { getGames } from '../lib/api/clients/games';
-// import type { components } from '../lib/api-client/types';
-// import { schemas } from '../lib/schemas/generated-schemas';
-
-type Game = unknown;
+import { useCallback, useEffect, useState } from 'react';
+import type { GameDescriptor } from '../types/games';
+import { loadGameRegistry } from '../data/game-registry';
 
 export function useGames() {
-  const [data, setData] = useState<Game[] | null>(null);
+  const [data, setData] = useState<GameDescriptor[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    let mounted = true;
+  const fetchGames = useCallback(async () => {
     setLoading(true);
-    getGames()
-      .then((games) => {
-        if (!mounted) return;
-        setData(games);
-      })
-      .catch((err) => {
-        if (!mounted) return;
-        setError(err?.message ?? String(err));
-      })
-      .finally(() => mounted && setLoading(false));
-
-    return () => {
-      mounted = false;
-    };
+    try {
+      const registry = await loadGameRegistry();
+      setData(registry);
+      setError(undefined);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { data, loading, error };
+  useEffect(() => {
+    fetchGames().catch(() => {
+      /* handled above */
+    });
+  }, [fetchGames]);
+
+  return { data, loading, error, refetch: fetchGames };
 }

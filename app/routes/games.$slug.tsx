@@ -10,7 +10,7 @@ import { useI18n } from '../i18n/i18n-provider';
 import type { GameDetailCopy } from '../types/i18n';
 
 export const loader = async ({ params }: { params: { slug?: string } }) => {
-  const game = getGameBySlug(params.slug);
+  const game = await getGameBySlug(params.slug);
   if (!game) {
     throw new Response('Game not found', { status: 404 });
   }
@@ -19,8 +19,8 @@ export const loader = async ({ params }: { params: { slug?: string } }) => {
 
 export default function GameBySlug() {
   const { game: initialGame } = useLoaderData<{ game: GameDescriptor }>();
-  const { game } = useGameLoader(initialGame?.slug, initialGame);
-  const descriptor = (game ?? initialGame)!;
+  const { game, error } = useGameLoader(initialGame?.slug, initialGame);
+  const descriptor = game ?? initialGame;
 
   const stats = useGameStats(descriptor.id);
   const [GameComponent, setGameComponent] = useState<ComponentType<GameComponentProps> | null>(
@@ -59,11 +59,11 @@ export default function GameBySlug() {
       }
       description={descriptor.overview}
     >
-      {GameComponent ? (
+      {descriptor && GameComponent ? (
         <GameComponent descriptor={descriptor} stats={stats} />
       ) : (
         <div className="rounded-2xl border border-dashed border-[color:var(--color-border)] p-6 text-sm text-[var(--color-muted)]">
-          {gameDetail.loading}
+          {error ? error : gameDetail.loading}
         </div>
       )}
     </PageShell>

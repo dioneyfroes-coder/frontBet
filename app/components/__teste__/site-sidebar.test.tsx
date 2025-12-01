@@ -5,8 +5,29 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { SiteSidebar, SiteNavMobile } from '../site-sidebar';
 import { I18nProvider } from '../../i18n/i18n-provider';
-import { gameRegistry } from '../../data/game-registry';
 import { LOCALE_STORAGE_KEY } from '../../i18n/config';
+
+const mockGame = {
+  id: 'coin-flip',
+  slug: 'coin-flip',
+  name: 'Coin Flip',
+  icon: '🪙',
+  category: 'probabilidades',
+  overview: 'mock overview',
+  highlights: [],
+  loadComponent: vi.fn(),
+};
+
+const mockUseGames = vi.fn(() => ({
+  data: [mockGame],
+  loading: false,
+  error: undefined,
+  refetch: vi.fn(),
+}));
+
+vi.mock('../../hooks/useGames', () => ({
+  useGames: () => mockUseGames(),
+}));
 
 const mockNavigate = vi.fn();
 
@@ -24,6 +45,13 @@ vi.mock('../animation', () => ({
 
 beforeEach(() => {
   mockNavigate.mockClear();
+  mockUseGames.mockReset();
+  mockUseGames.mockReturnValue({
+    data: [mockGame],
+    loading: false,
+    error: undefined,
+    refetch: vi.fn(),
+  });
   window.localStorage.setItem(LOCALE_STORAGE_KEY, 'pt-BR');
 });
 
@@ -43,7 +71,7 @@ describe('SiteSidebar', () => {
     );
 
     expect(screen.getByRole('link', { name: 'Visão geral' })).toBeInTheDocument();
-    const dynamicLabel = `${gameRegistry[0].icon} ${gameRegistry[0].name}`;
+    const dynamicLabel = `${mockGame.icon} ${mockGame.name}`;
     expect(screen.getByText(dynamicLabel)).toBeInTheDocument();
   });
 

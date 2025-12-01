@@ -1,9 +1,9 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { HoverLift } from './animation';
-import { gameRegistry } from '../data/game-registry';
+import { useGames } from '../hooks/useGames';
 import { useI18n } from '../i18n/i18n-provider';
 
 type SidebarNavItem = { to: string; labelKey: string } | { to: string; label: string };
@@ -20,14 +20,6 @@ const baseNav: SidebarNavItem[] = [
   { labelKey: 'navigation.contact', to: '/contato' },
 ];
 
-const sidebarNav: SidebarNavItem[] = [
-  ...baseNav,
-  ...gameRegistry.map((game) => ({
-    label: `${game.icon} ${game.name}`,
-    to: `/games/${game.slug}`,
-  })),
-];
-
 const quickActions: Array<{ labelKey: string; to: string }> = [
   { labelKey: 'quickActions.depositPix', to: '/carteira' },
   { labelKey: 'quickActions.explorePromos', to: '/loja' },
@@ -36,6 +28,20 @@ const quickActions: Array<{ labelKey: string; to: string }> = [
 function SiteSidebarComponent() {
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { data: games } = useGames();
+
+  const sidebarNav: SidebarNavItem[] = useMemo(() => {
+    if (!games || games.length === 0) {
+      return baseNav;
+    }
+    const entries = games
+      .filter((game) => Boolean(game.slug))
+      .map<SidebarNavItem>((game) => ({
+        label: [game.icon, game.name].filter(Boolean).join(' ').trim() || game.slug,
+        to: `/games/${game.slug}`,
+      }));
+    return [...baseNav, ...entries];
+  }, [games]);
 
   return (
     <aside
@@ -92,6 +98,17 @@ function SiteSidebarComponent() {
 
 function SiteNavMobileComponent() {
   const { t } = useI18n();
+  const { data: games } = useGames();
+  const sidebarNav: SidebarNavItem[] = useMemo(() => {
+    if (!games || games.length === 0) return baseNav;
+    const entries = games
+      .filter((game) => Boolean(game.slug))
+      .map<SidebarNavItem>((game) => ({
+        label: [game.icon, game.name].filter(Boolean).join(' ').trim() || game.slug,
+        to: `/games/${game.slug}`,
+      }));
+    return [...baseNav, ...entries];
+  }, [games]);
   return (
     <div
       className="-mx-4 mb-4 overflow-x-auto border-b border-[color:var(--color-border)] bg-[var(--color-surface)] px-4 py-3 lg:hidden"

@@ -1,22 +1,49 @@
-import { describe, it, expect } from 'vitest';
-import { gameRegistry, getGameBySlug } from '../game-registry';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { loadGameRegistry, getGameBySlug, clearGameRegistryCache } from '../game-registry';
 
-describe('gameRegistry', () => {
-  it('exposes descriptors with required fields', () => {
-    expect(gameRegistry.length).toBeGreaterThanOrEqual(3);
-    for (const descriptor of gameRegistry) {
-      expect(descriptor.id).toMatch(/^[a-z-]+$/);
-      expect(descriptor.slug).toEqual(descriptor.id);
-      expect(descriptor.name.length).toBeGreaterThan(0);
-      expect(typeof descriptor.loadComponent).toBe('function');
-      expect(Array.isArray(descriptor.highlights)).toBe(true);
-    }
+const mockGetGames = vi.fn(async () => [
+  {
+    id: 'coin-flip',
+    slug: 'coin-flip',
+    name: 'Coin Flip',
+    icon: '🪙',
+    category: 'probabilidades',
+    overview: 'Cara ou coroa',
+    highlights: ['Instantâneo'],
+  },
+]);
+
+vi.mock('../../lib/api/clients/games', async () => {
+  const actual = await vi.importActual<typeof import('../../lib/api/clients/games')>(
+    '../../lib/api/clients/games'
+  );
+  return {
+    ...actual,
+    getGames: () => mockGetGames(),
+  };
+});
+
+describe('gameRegistry (dynamic)', () => {
+  beforeEach(() => {
+    mockGetGames.mockClear();
+    clearGameRegistryCache();
   });
 
-  it('resolves a game by slug', () => {
-    const sample = gameRegistry[0];
-    const found = getGameBySlug(sample.slug);
-    expect(found).toBe(sample);
-    expect(getGameBySlug('inexistente')).toBeUndefined();
+  it('hydrates descriptors with loadable modules', async () => {
+    const registry = await loadGameRegistry({ force: true });
+    expect(mockGetGames).toHaveBeenCalledTimes(1);
+    expect(registry.length).toBeGreaterThan(0);
+    const descriptor = registry[0];
+    expect(descriptor.slug).toBe('coin-flip');
+    expect(typeof descriptor.loadComponent).toBe('function');
+    expect(Array.isArray(descriptor.highlights)).toBe(true);
+  });
+
+  it('resolves a game by slug when cache is primed', async () => {
+    await loadGameRegistry({ force: true });
+    const found = await getGameBySlug('coin-flip');
+    expect(found?.name).toBe('Coin Flip');
+    const missing = await getGameBySlug('inexistente');
+    expect(missing).toBeUndefined();
   });
 });

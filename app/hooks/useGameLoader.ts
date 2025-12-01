@@ -1,18 +1,23 @@
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { getGameBySlug, gameRegistry } from '../data/game-registry';
 import type { GameDescriptor } from '../types/games';
+import { useGames } from './useGames';
 
 export function useGameLoader(initialSlug?: string, initialGame?: GameDescriptor) {
   const params = useParams();
   const slug = initialSlug ?? initialGame?.slug ?? params.slug ?? '';
+  const { data: registry, loading, error } = useGames();
+  const [game, setGame] = useState<GameDescriptor | undefined>(initialGame);
 
-  const game = useMemo<GameDescriptor | undefined>(() => {
-    if (initialGame && typeof initialGame.loadComponent === 'function') {
-      return initialGame;
+  useEffect(() => {
+    if (!registry || !slug) return;
+    const found = registry.find((descriptor) => descriptor.slug === slug || descriptor.id === slug);
+    if (found) {
+      setGame(found);
     }
-    return getGameBySlug(slug) ?? initialGame;
-  }, [initialGame, slug]);
+  }, [registry, slug]);
 
-  return { game, slug, allGames: gameRegistry };
+  const allGames = registry ?? [];
+
+  return { game, slug, allGames, loading, error };
 }
