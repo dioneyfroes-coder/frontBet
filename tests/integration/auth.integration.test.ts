@@ -2,6 +2,8 @@ import { expect, it, describe } from 'vitest';
 
 import { apiFetch, ApiError } from '../../app/lib/api';
 import { setTokens, clearTokens } from '../../app/lib/token';
+import { getTestCredentials } from '../utils/integration-auth';
+import type { TestLoginEnvelope } from '../utils/integration-auth';
 
 const describeMaybe = process.env.RUN_AUTH_INTEGRATION === 'true' ? describe : describe.skip;
 
@@ -14,29 +16,21 @@ describeMaybe('Auth integration flow (login -> authorized request -> logout)', (
     // ensure clean state
     clearTokens();
 
-    // 1) Perform login (MSW default handler returns accessToken: 'tok')
-    const login = await apiFetch('/api/auth/login', {
+    const creds = getTestCredentials();
+    if (!creds) {
+      throw new Error('Set TEST_USER_EMAIL and TEST_USER_PASSWORD to run auth integration tests.');
+    }
+
+    // 1) Perform login using configured credentials
+    const login = await apiFetch<TestLoginEnvelope>('/api/auth/login', {
       method: 'POST',
-      json: { email: 'a@a.com' },
+      json: { email: creds.email, password: creds.password },
       skipAuth: true,
     });
-    // login shape from MSW: { success: true, data: { accessToken, refreshToken, user } }
-    // accept either shape; safely probe unknown shape
-    let accessToken = 'tok';
-    let refreshToken = 'ref';
-    try {
-      const l = login as unknown;
-      if (l && typeof l === 'object') {
-        const obj = l as Record<string, unknown>;
-        const data = (obj['data'] as unknown) ?? obj;
-        if (data && typeof data === 'object') {
-          const d = data as Record<string, unknown>;
-          if (typeof d['accessToken'] === 'string') accessToken = d['accessToken'] as string;
-          if (typeof d['refreshToken'] === 'string') refreshToken = d['refreshToken'] as string;
-        }
-      }
-    } catch {
-      // ignore and use defaults
+    const accessToken = login?.data?.accessToken;
+    const refreshToken = login?.data?.refreshToken;
+    if (!accessToken || !refreshToken) {
+      throw new Error('Auth login must return accessToken and refreshToken.');
     }
 
     // persist tokens as frontend would
@@ -45,17 +39,16 @@ describeMaybe('Auth integration flow (login -> authorized request -> logout)', (
     // 2) Call the real backend endpoint. This test expects a running backend
     // when `USE_REAL_BACKEND=true` is set in the environment.
     const wallet = await apiFetch('/api/wallets/me');
-    const w = wallet as unknown;
-    let ok = false;
-    if (w && typeof w === 'object') {
-      const ow = w as Record<string, unknown>;
-      const d = ow['data'] ?? ow;
-      if (d && typeof d === 'object') {
-        const dd = d as Record<string, unknown>;
-        ok = Boolean(dd['ok']);
-      }
-    }
-    expect(ok).toBe(true);
+    type WalletEnvelope = {
+      data?: {
+        id?: string;
+        balance?: { amount?: number | null } | null;
+      } | null;
+    };
+    const walletData = (wallet as WalletEnvelope)?.data;
+    const hasIdentifier = typeof walletData?.id === 'string' && walletData.id.length > 0;
+    const hasBalance = typeof walletData?.balance?.amount === 'number';
+    expect(hasIdentifier || hasBalance).toBe(true);
 
     // 3) Simulate logout: clear tokens
     clearTokens();

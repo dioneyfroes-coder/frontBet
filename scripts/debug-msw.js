@@ -12,7 +12,7 @@
 
   try {
     const res = await fetch(`${base}/api/wallets/me`);
-    const text = await res.text();
+    await res.text();
     // minimal output: status only
     console.log(res.status);
   } catch (err) {

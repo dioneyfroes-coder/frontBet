@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { I18nProvider } from '../../app/i18n/i18n-provider';
 import { useWallet } from '../../app/hooks/useWallet';
+import { ensureIntegrationTokens } from '../utils/integration-auth';
 
 function WalletConsumer() {
   const { wallet, loading } = useWallet();
@@ -26,6 +27,8 @@ describeMaybe('Wallet integration', () => {
       // Integration test requires backend; skip when not explicitly enabled.
       return;
     }
+    await ensureIntegrationTokens();
+
     render(
       <I18nProvider initialLocale="pt-BR">
         <WalletConsumer />

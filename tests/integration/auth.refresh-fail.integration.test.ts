@@ -18,7 +18,12 @@ describeMaybe('Auth refresh failure', () => {
       return;
     }
 
-    tokenModule.setTokens({ accessToken: 'expired', refreshToken: 'refresh-old' });
+    const badRefresh = process.env.TEST_BAD_REFRESH_TOKEN;
+    if (!badRefresh) {
+      throw new Error('Set TEST_BAD_REFRESH_TOKEN to run the refresh failure integration test.');
+    }
+    const badAccess = process.env.TEST_BAD_ACCESS_TOKEN ?? 'expired';
+    tokenModule.setTokens({ accessToken: badAccess, refreshToken: badRefresh });
 
     const spy = vi.spyOn(tokenModule, 'clearTokens');
 

@@ -64,7 +64,7 @@ export default function BackendHealthNotifier({
           shownRef.current = true;
           show(toastMessage, 'info');
         }
-      } catch (err) {
+      } catch {
         // swallow failures silently; the notifier only reports successful checks
         // Swallow errors here — this module only notifies on success.
       }

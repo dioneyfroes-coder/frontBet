@@ -119,7 +119,8 @@ export default function Carteira() {
           const reference = String(rec.description ?? rec.reference ?? '');
           const amountNum = typeof rec.amount === 'number' ? rec.amount : 0;
           const amount = Number((amountNum / 100).toFixed(2));
-          const status = (String(rec.status ?? 'confirmado') as Transaction['status']) ?? 'confirmado';
+          const status =
+            (String(rec.status ?? 'confirmado') as Transaction['status']) ?? 'confirmado';
           const timestamp = String(rec.createdAt ?? rec.timestamp ?? new Date().toISOString());
           const channel = (String(rec.channel ?? 'Web') as LiveChannel) ?? 'Web';
           return { id, type, reference, amount, status, timestamp, channel };

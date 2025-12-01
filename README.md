@@ -68,6 +68,11 @@ Mocking / Mocks
 
 - Mocks e dados de exemplo foram removidos do fluxo padrão do projeto. A aplicação e os componentes devem buscar dados diretamente do backend definido em `NEXT_PUBLIC_API_BASE_URL`.
 - Para rodar os testes de integração contra o backend real, exporte `USE_REAL_BACKEND=true` (e para testes de autenticação `RUN_AUTH_INTEGRATION=true` quando aplicável).
+- Os testes de integração exigem credenciais reais ou tokens já emitidos pelo backend. Configure uma das opções abaixo antes de executar `RUN_AUTH_INTEGRATION`:
+  - `TEST_USER_EMAIL` + `TEST_USER_PASSWORD`: usuário válido que já exista no backend; os testes chamam `/auth/login` usando esses valores.
+  - `TEST_ACCESS_TOKEN` + `TEST_REFRESH_TOKEN`: par de tokens já emitido. Se não houver refresh token disponível, apenas testes que não exigem refresh serão executados.
+  - `TEST_BYPASS_USER_ID`: quando `ALLOW_DEV_BEARER_BYPASS=true` estiver habilitado no backend, informe o `userId` para autorizar chamadas sem autenticação completa.
+- Para validar o cenário de falha no refresh (`RUN_AUTH_REFRESH_FAIL=true`) forneça `TEST_BAD_REFRESH_TOKEN` (e opcionalmente `TEST_BAD_ACCESS_TOKEN`) que o backend irá rejeitar.
 - Se você precisar de um ambiente mock local para desenvolvimento, reintroduzir MSW é possível, mas não é parte do fluxo padrão — fale com o time/maintainer para orientação.
 
 Exemplo rápido (rodando contra o backend configurado em `.env`):

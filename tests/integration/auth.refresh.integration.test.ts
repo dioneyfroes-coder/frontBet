@@ -2,6 +2,7 @@ import { expect, it, describe } from 'vitest';
 
 import { apiFetch } from '../../app/lib/api';
 import { setTokens, clearTokens } from '../../app/lib/token';
+import { ensureIntegrationTokens } from '../utils/integration-auth';
 
 const describeMaybe = process.env.RUN_AUTH_INTEGRATION === 'true' ? describe : describe.skip;
 
@@ -12,24 +13,29 @@ describeMaybe('Auth refresh flow (401 -> refresh -> retry)', () => {
     }
     // ensure clean state
     clearTokens();
+    const seeded = await ensureIntegrationTokens({ requireRefresh: true });
+    if (!seeded.refreshToken) {
+      throw new Error(
+        'Refresh test requires TEST_REFRESH_TOKEN or backend login providing refreshToken.'
+      );
+    }
 
     // seed expired tokens. The backend must accept the refresh token and
     // issue new tokens for this test to pass when `USE_REAL_BACKEND=true`.
-    setTokens({ accessToken: 'expired-token', refreshToken: 'refresh-old' });
+    setTokens({ accessToken: 'expired-token', refreshToken: seeded.refreshToken });
 
     // Call the real backend and expect it to perform refresh and return a wallet.
     const res = await apiFetch('/api/wallets/me');
-    // validate response shape safely
-    const r = res as unknown;
-    let ok = false;
-    if (r && typeof r === 'object') {
-      const o = r as Record<string, unknown>;
-      const data = o['data'];
-      if (data && typeof data === 'object') {
-        const d = data as Record<string, unknown>;
-        ok = Boolean(d['wallet']);
-      }
-    }
-    expect(ok).toBe(true);
+    type WalletEnvelope = {
+      data?: {
+        id?: string;
+        balance?: { amount?: number | null } | null;
+      } | null;
+    };
+    const wallet = (res as WalletEnvelope)?.data;
+    expect(wallet).toBeTruthy();
+    expect(typeof wallet?.id === 'string' || typeof wallet?.balance?.amount === 'number').toBe(
+      true
+    );
   });
 });
