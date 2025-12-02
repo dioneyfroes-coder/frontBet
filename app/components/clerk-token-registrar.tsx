@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect } from 'react';
 import { useClerk } from '@clerk/react-router';
 import { registerAccessTokenProvider, setTokens, handleLogout } from '../lib';

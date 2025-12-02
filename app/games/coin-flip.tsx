@@ -196,12 +196,19 @@ export function CoinFlipGame({ descriptor, stats }: GameComponentProps) {
         <CardContent className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-wide text-[var(--color-muted)]">Status</p>
-            <p className={cn('text-lg font-semibold', config?.enabled ? 'text-emerald-400' : 'text-amber-300')}>
+            <p
+              className={cn(
+                'text-lg font-semibold',
+                config?.enabled ? 'text-emerald-400' : 'text-amber-300'
+              )}
+            >
               {statusLabel}
             </p>
           </div>
           <div>
-            <p className="text-sm uppercase tracking-wide text-[var(--color-muted)]">Saldo disponível</p>
+            <p className="text-sm uppercase tracking-wide text-[var(--color-muted)]">
+              Saldo disponível
+            </p>
             <p className="text-2xl font-semibold">
               {loading ? 'Carregando...' : formatCurrencyUnits(walletBalance, currency)}
             </p>
@@ -218,7 +225,10 @@ export function CoinFlipGame({ descriptor, stats }: GameComponentProps) {
             <p className="text-[var(--color-muted)]">Telemetria</p>
             <p>Taxa de vitória: {stats.winRate.toFixed(1)}%</p>
             <p>Jogadores ativos: {stats.activePlayers.toLocaleString('pt-BR')}</p>
-            <p>Tendência: {stats.trend === 'up' ? 'Alta' : stats.trend === 'down' ? 'Baixa' : 'Estável'}</p>
+            <p>
+              Tendência:{' '}
+              {stats.trend === 'up' ? 'Alta' : stats.trend === 'down' ? 'Baixa' : 'Estável'}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -269,7 +279,7 @@ export function CoinFlipGame({ descriptor, stats }: GameComponentProps) {
             </div>
             <div className="flex items-end">
               <Button type="submit" disabled={isPlaying || loading || !config || !config.enabled}>
-                {isPlaying ? 'Jogando...' : 'Jogar' }
+                {isPlaying ? 'Jogando...' : 'Jogar'}
               </Button>
             </div>
           </form>
@@ -303,7 +313,8 @@ export function CoinFlipGame({ descriptor, stats }: GameComponentProps) {
                     </div>
                     {round.payoutAmount != null && (
                       <p className="text-sm text-[var(--color-muted)]">
-                        Pagamento: {formatCurrencyUnits(round.payoutAmount, round.currency ?? currency)}
+                        Pagamento:{' '}
+                        {formatCurrencyUnits(round.payoutAmount, round.currency ?? currency)}
                       </p>
                     )}
                   </li>
@@ -323,13 +334,21 @@ export function CoinFlipGame({ descriptor, stats }: GameComponentProps) {
             ) : (
               <ul className="space-y-3">
                 {feed.map((round) => (
-                  <li key={`${round.createdAt}-${round.choice}`} className="rounded-xl bg-[var(--color-border)]/20 p-4">
+                  <li
+                    key={`${round.createdAt}-${round.choice}`}
+                    className="rounded-xl bg-[var(--color-border)]/20 p-4"
+                  >
                     <div className="flex items-center justify-between text-sm text-[var(--color-muted)]">
                       <span>{formatTimestamp(round.createdAt)}</span>
-                      <span>{round.outcome ? `Resultado: ${round.outcome === 'HEADS' ? 'Cara' : 'Coroa'}` : 'Em andamento'}</span>
+                      <span>
+                        {round.outcome
+                          ? `Resultado: ${round.outcome === 'HEADS' ? 'Cara' : 'Coroa'}`
+                          : 'Em andamento'}
+                      </span>
                     </div>
                     <div className="text-sm font-semibold">
-                      Usuário · aposta de {formatCurrencyUnits(round.wager, round.currency ?? currency)} em{' '}
+                      Usuário · aposta de{' '}
+                      {formatCurrencyUnits(round.wager, round.currency ?? currency)} em{' '}
                       {round.choice === 'HEADS' ? 'Cara' : 'Coroa'}
                     </div>
                   </li>
