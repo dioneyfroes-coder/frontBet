@@ -28,6 +28,11 @@ export default function GameBySlug() {
   );
 
   useEffect(() => {
+    if (!descriptor || typeof descriptor.loadComponent !== 'function') {
+      setGameComponent(null);
+      return;
+    }
+
     let cancelled = false;
     descriptor
       .loadComponent()
